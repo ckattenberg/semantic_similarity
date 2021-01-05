@@ -2,8 +2,7 @@ from readdata import read
 from preprocess import process, clean_process
 from collections import defaultdict
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics import accuracy_score
-
+from sklearn.metrics import accuracy_score, precision_score, recall_score
 
 def cosine_sim(text1, text2):
    tfidf = vectorizer.fit_transform([text1, text2])
@@ -22,10 +21,12 @@ if __name__ == "__main__":
       score = cosine_sim(text1,text2)
 
       # Threshold
-      if score > 0.9:
+      if score > 0.85:
          result.append(1)
       else:
          result.append(0)
    
 print('Accuracy: ', accuracy_score(correct, result))
+print('Precision: ', precision_score(correct, result))
+print('Recall: ', recall_score(correct, result))
 
