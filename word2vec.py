@@ -22,7 +22,6 @@ def word2vec_similarity(word1, word2, model):
 
 def get_vector(word, model):
 	vec = model.wv[word]
-
 	return(vec)
 
 # Save model
