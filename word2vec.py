@@ -12,7 +12,6 @@ def word2vec_model(data):
                                              	window = 5, sg = 1)
 	return(model)
 
-
 # Compares 2 words using the model
 def word2vec_similarity(word1, word2, model):
 	simil = model.wv.similarity(word1, word2)
@@ -21,12 +20,10 @@ def word2vec_similarity(word1, word2, model):
 
 	return(simil)
 
-
 def get_vector(word, model):
 	vec = model.wv[word]
 
 	return(vec)
-
 
 # Save model
 def save_model(model):
