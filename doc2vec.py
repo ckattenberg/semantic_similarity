@@ -6,21 +6,49 @@ import preprocess
 # Read in the data and preprocess it.
 def read_data():
 	data = readdata.read()[:3]
-	data = preprocess.clean_process(data)
-	corpus = list(data['question1']) + list(data['question2'])
-	return(corpus)
+	train, test = readdata.clean_split(data)
+	train_corpus = list(train['question1']) + list(train['question2'])
+	test_corpus = list(test['question1']) + list(test['question2'])
+	return(train_corpus, test_corpus)
 
 # Turn corpus into TaggedDocument (as input for model training)
-def read_corpus(corpus):
+def read_corpus(corpus, tokens_only=False):
 	for i, line in enumerate(corpus):
-		yield gensim.models.doc2vec.TaggedDocument(line, [i])
+		if(tokens_only):
+			yield line
+		else:
+			yield gensim.models.doc2vec.TaggedDocument(line, [i])
+
+def doc2vec_model(training_data):
+	model = gensim.models.doc2vec.Doc2Vec(vector_size=50, 
+		min_count=2, epochs=40)
+
+	# Build a vocabulary
+	model.build_vocab(train_corpus)
+
+	# Train the doc2vec model on the training data
+	model.train(train_corpus, total_examples=model.corpus_count, 
+		epochs=model.epochs)
+
+	return(model)
+
+def doc2vec(model, sent):
+	vector = model.infer_vector(sent)
+	return(vector)
+
 
 # Main function
 if __name__ == "__main__":
 
 	# Read in the data
-	corpus = read_data()
-	train_corpus = list(read_corpus(corpus))
+	train_corpus, test_corpus = read_data()
+	training_data = list(read_corpus(train_corpus))
+	test_data = list(read_corpus(train_corpus, tokens_only=True))
+
+	model = doc2vec_model(training_data)
+
+	# Get vector from sentence
+	
 
 
 
