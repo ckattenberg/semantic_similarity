@@ -16,8 +16,10 @@ def clean_process(data):
     tokenizer = RegexpTokenizer(r'\w+\'*\w*')
     data.question1 = data.question1.apply(tokenizer.tokenize)
     data.question2 = data.question2.apply(tokenizer.tokenize)
-    data.dropna()
-    return data
+    data1 = data[data.question1.str.len() != 0]
+    data2 = data1[data1.question2.str.len() != 0]
+    
+    return data2
 
 def clean_split(data):
     '''Cleans the dataset, then splits it into a training and a testing dataframe.'''

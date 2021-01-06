@@ -46,7 +46,6 @@ def calc_similarity(data, vectors):
 
 if __name__ == "__main__":
     raw_data = preprocess.clean_process(readdata.read())
-    print(np.where(raw_data.question1.str.len() == 0))
     partition = floor(len(raw_data.index)*0.7)
     try:
         model = word2vec.Word2Vec.load("w2vmodel.mod")
