@@ -24,10 +24,6 @@ def make_space(data, partition):
 def string_similarity(vectors, s1, s2):
     '''Calculates the similarity of a "sentence", a list of words, by summing
     the word-vectors of those words and taking the average.'''
-    if len(s1) == 0 or len(s2) == 0:
-        print('beep')
-        return 0
-    
     sen_vector1 = [0] * vector_size
     for word in s1:
         sen_vector1 += vectors[word]
@@ -47,10 +43,13 @@ def calc_similarity(data, vectors):
 if __name__ == "__main__":
     raw_data = preprocess.clean_process(readdata.read())
     partition = floor(len(raw_data.index)*0.7)
-    try:
-        model = word2vec.Word2Vec.load("w2vmodel.mod")
-    except:
-        model = make_space(raw_data, partition)
+    # try:
+    #     model = word2vec.Word2Vec.load("w2vmodel.mod")
+    # except:
+    model = make_space(raw_data, partition)
+    # sorted_data = dict(sorted(model.wv.vocab, key=lambda x: x[1],reverse=True))
+    for x in model.wv.index2entity[:100]:
+        print(x, ':', model.wv.vocab[x].count)
 
     test = raw_data[partition:]
     model.save("w2vmodel.mod")
