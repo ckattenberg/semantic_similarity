@@ -48,10 +48,6 @@ if __name__ == "__main__":
 	model = doc2vec_model(train_data)
 	model.save("doc2vec.model")
 
-	# Get vector from sentence
-	vec = doc2vec(model, ['should', 'i', 'buy', 'tiago'])
-
-	print(vec)
 	
 
 
