@@ -30,5 +30,12 @@ def clean_split(data):
 
     return train, test
 
+def untokenized_split(data):
+    partition = floor(len(data.index)*0.7)
+    train = pd.DataFrame(data[:partition])
+    test = pd.DataFrame(data[partition:])
+
+    return train, test
+
 if __name__ == "__main__":
    print(clean_process(read()[:10]))
