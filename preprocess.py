@@ -18,7 +18,7 @@ def clean_process(data):
     data.question2 = data.question2.apply(tokenizer.tokenize)
     data1 = data[data.question1.str.len() != 0]
     data2 = data1[data1.question2.str.len() != 0]
-    
+    print('test')
     return data2
 
 def clean_split(data):
