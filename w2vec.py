@@ -1,4 +1,3 @@
-from gensim.utils import flatten
 import preprocess
 import readdata
 from gensim.models import word2vec
@@ -20,13 +19,13 @@ def make_space(data, partition):
     model.build_vocab(vocab)
     model.train(sentences, total_examples=len(sentences), epochs=model.epochs)
 
-    return model.wv
+    return model
 
 def string_similarity(vectors, s1, s2):
     '''Calculates the similarity of a "sentence", a list of words, by summing
     the word-vectors of those words and taking the average.'''
     if len(s1) == 0 or len(s2) == 0:
-        # to decide what to do
+        print('beep')
         return 0
     
     sen_vector1 = [0] * vector_size
@@ -47,14 +46,26 @@ def calc_similarity(data, vectors):
 
 if __name__ == "__main__":
     raw_data = preprocess.clean_process(readdata.read())
-    print(raw_data[:10].question1)
+    print(np.where(raw_data.question1.str.len() == 0))
     partition = floor(len(raw_data.index)*0.7)
-    test = raw_data[partition:]
-    vectors = make_space(raw_data, partition)
+    try:
+        model = word2vec.Word2Vec.load("w2vmodel.mod")
+    except:
+        model = make_space(raw_data, partition)
 
+    test = raw_data[partition:]
+    model.save("w2vmodel.mod")
+    vectors = model.wv
+
+    
     result = calc_similarity(test, vectors)
     
     # Counts true positives (similarity > 0.9 and duplicate) and true negatives ()
     tp = sum(np.where((result >= 0.9) & (test.is_duplicate == 1), 1, 0))
     tf = sum(np.where((result < 0.9) & (test.is_duplicate == 0), 1, 0))
+    fp = sum(np.where((result >= 0.9) & (test.is_duplicate == 0), 1, 0))
+    fn = sum(np.where((result < 0.9) & (test.is_duplicate == 1), 1, 0))
+
     print("Accuracy test: ", (tp+tf)/len(result))
+    print("Precision test: ", tp/(tp+fp))
+    print("Recall test: ", tp/(tp + fn))
