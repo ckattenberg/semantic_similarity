@@ -1,5 +1,5 @@
 from readdata import read
-from preprocess import process, clean_process
+from preprocess import process, clean_process, clean_split
 from collections import defaultdict
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import accuracy_score, precision_score, recall_score
@@ -10,8 +10,10 @@ def cosine_sim(text1, text2):
 vectorizer = TfidfVectorizer(min_df=1, stop_words='english')   
 
 if __name__ == "__main__":
-   data = read()[:5000]
-   correct = list(data.is_duplicate)[:5000]
+   data = clean_split(read())
+   print(data[1])
+
+   # correct = list(data.is_duplicate)
    result = []
 
    # Put all the sentences in the dataset in a large corpus list.
