@@ -17,7 +17,7 @@ if __name__ == "__main__":
         text2 = nlp(data['question2'][id])
         score = text1.similarity(text2)
 
-        if score > 0.9:
+        if score > 0.96:
             result.append(1)
         else:
             result.append(0)
