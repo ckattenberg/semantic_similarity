@@ -15,6 +15,8 @@ from scipy import spatial
 import numpy as np
 from math import floor
 
+from sklearn import datasets, linear_model
+
 # baseline model
 def create_baseline():
 	# create model
@@ -42,12 +44,10 @@ def vectorize_sent(vectors, s1, s2):
     for word in s2:
         sen_vector2 += vectors[word]
     avg2 = np.array(sen_vector2)/len(s2)
-    print(avg2)
-
-    return avg1+avg2
+    res = np.concatenate((avg1,avg2))
+    return res
 
 if __name__ == "__main__":
-    # 
     raw_data = preprocess.clean_process(readdata.read())
     partition = floor(len(raw_data.index)*0.7)
     try:
@@ -71,10 +71,9 @@ if __name__ == "__main__":
     X = np.array(vector_list)
     Y = np.array(list(test['is_duplicate']))
 
-    print(test['is_duplicate'].value_counts())
-
-    estimator = KerasClassifier(build_fn=create_baseline, epochs=100, batch_size=5, verbose=0)
+    print('--- testing ---')
+    estimator = KerasClassifier(build_fn=create_baseline, epochs=100, batch_size=25, verbose=1)
     kfold = StratifiedKFold(n_splits=10, shuffle=True)
-    results = cross_val_score(estimator, X[:500], Y[:500], cv=kfold)
+    results = cross_val_score(estimator, X[:50000], Y[:50000], cv=kfold)
     print("Baseline: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
 
