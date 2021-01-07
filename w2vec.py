@@ -19,6 +19,9 @@ def B25_score(Q, D, model, doc_count, avgdl):
             continue
         inter = IDF_calc(term, model, doc_count)
         inter *= (D.count(term) * (k_1 + 1))/(D.count(term) + k_1 * (1-b + b * len(D)/avgdl))
+        score += inter
+    return score
+    
 
 def IDF_calc(word, model, doc_count):
     q = model.wv.vocab[word].count
@@ -62,7 +65,7 @@ def calc_similarity(data, model, doc_count, avgdl):
     return data.apply(lambda row: string_similarity(model, row.question1, row.question2, doc_count, avgdl), axis=1)
 
 def calc_B25(data, model, doc_count, avgdl):
-    return data.apply(lambda row: B25_score(row.question1, row.question2, model, doc_count, avgdl))
+    return data.apply(lambda row: B25_score(row.question1, row.question2, model, doc_count, avgdl),axis=1)
 
 if __name__ == "__main__":
     raw_data = preprocess.clean_process(readdata.read())
@@ -72,23 +75,26 @@ if __name__ == "__main__":
     # except:
     model = make_space(raw_data, partition)
     doc_count = 2*len(raw_data.index)
-    avgdl = sum(raw_data.question1.apply(len).mean()) + sum(raw_data.question2.apply(len).mean())
-    avgdl /= 2
+    avgdl = sum(raw_data.question1.apply(len)) + sum(raw_data.question2.apply(len))
+    avgdl /= doc_count
 
     test = raw_data[partition:]
     model.save("w2vmodel.mod")
     
     # result = calc_similarity(test, model, doc_count, avgdl)
     result = calc_B25(test, model, doc_count, avgdl)
-    print(result[:10])
+    max_res = result.max()
+    min_res = result.min()
+    normalized = result.apply(lambda val: (val-min_res)/(max_res - min_res))
+
     
     # Counts true positives (similarity > 0.9 and duplicate) and true negatives ()
-    threshold = 0.9
-    tp = sum(np.where((result >= threshold) & (test.is_duplicate == 1), 1, 0))
-    tf = sum(np.where((result < threshold) & (test.is_duplicate == 0), 1, 0))
-    fp = sum(np.where((result >= threshold) & (test.is_duplicate == 0), 1, 0))
-    fn = sum(np.where((result < threshold) & (test.is_duplicate == 1), 1, 0))
+    threshold = 0.6
+    tp = sum(np.where((normalized >= threshold) & (test.is_duplicate == 1), 1, 0))
+    tf = sum(np.where((normalized < threshold) & (test.is_duplicate == 0), 1, 0))
+    fp = sum(np.where((normalized >= threshold) & (test.is_duplicate == 0), 1, 0))
+    fn = sum(np.where((normalized < threshold) & (test.is_duplicate == 1), 1, 0))
 
-    print("Accuracy test: ", (tp+tf)/len(result))
+    print("Accuracy test: ", (tp+tf)/len(normalized))
     print("Precision test: ", tp/(tp+fp))
     print("Recall test: ", tp/(tp + fn))
