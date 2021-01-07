@@ -26,7 +26,7 @@ def read_corpus(corpus, tokens_only=False):
 			yield gensim.models.doc2vec.TaggedDocument(line, [i])
 
 def doc2vec_model(train_data):
-	model = gensim.models.doc2vec.Doc2Vec(vector_size=20, 
+	model = gensim.models.doc2vec.Doc2Vec(vector_size=5, 
 		min_count=2, epochs=40)
 
 	# Build a vocabulary
