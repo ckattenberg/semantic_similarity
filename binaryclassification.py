@@ -7,7 +7,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
+from sklearn import preprocessing
 import preprocess
 import readdata
 from gensim.models import word2vec
@@ -61,6 +61,11 @@ def train_test_model(X, Y, partition_size = 0.7, batch_size = 25):
     X_test = X[partition:]
     y_train = Y[:partition]
     y_test = Y[partition:]
+
+    # Scaling data barely improves accuracy:
+    # scaler = preprocessing.StandardScaler()
+    # X_train_scaled = scaler.fit_transform(X_train)
+    # X_test_scaled = scaler.fit_transform(X_test)
 
     estimator = KerasClassifier(build_fn=create_baseline, epochs=100, batch_size=batch_size, verbose=1)
     estimator.fit(X_train, y_train)
