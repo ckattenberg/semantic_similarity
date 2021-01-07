@@ -9,25 +9,27 @@ from numpy import log
 # Magic number; gensim's word2vec seems to use vectors of size 100
 vector_size = 100
 # Magic number; parameters for B25
-k_1 = 1.7
-b = 0.75
+# k_1 = 1.7
+# b = 0.75
 
-def B25_score(Q, D, model, doc_count, avgdl):
-    score = 0
-    for term in Q:
-        if term not in D:
-            continue
-        inter = IDF_calc(term, model, doc_count)
-        inter *= (D.count(term) * (k_1 + 1))/(D.count(term) + k_1 * (1-b + b * len(D)/avgdl))
-        score += inter
-    return score
+# def B25_score(Q, D, model, doc_count, avgdl):
+#     score = 0
+#     for term in Q:
+#         if term not in D:
+#             continue
+#         inter = IDF_calc(term, model, doc_count)
+#         inter *= (D.count(term) * (k_1 + 1))/(D.count(term) + k_1 * (1-b + b * len(D)/avgdl))
+#         score += inter
+#     return score
     
 
-def IDF_calc(word, model, doc_count):
-    q = model.wv.vocab[word].count
-    ans = log((doc_count - q + 0.5)/(q + 0.5) + 1)
-    return max(ans, 0.01)
+# def IDF_calc(word, model, doc_count):
+#     q = model.wv.vocab[word].count
+#     ans = log((doc_count - q + 0.5)/(q + 0.5) + 1)
+#     return max(ans, 0.01)
 
+# def calc_B25(data, model, doc_count, avgdl):
+#     return data.apply(lambda row: B25_score(row.question1, row.question2, model, doc_count, avgdl),axis=1)
 
 def make_space(data, partition):
     '''Combines the two lists of questions to make a single list, the result is a list of list of tokens.
@@ -48,24 +50,21 @@ def string_similarity(model, s1, s2):
     vectors = model.wv
     sen_vector1 = [0] * vector_size
     for word in s1:
-        fac = 1/vectors.vocab[word].count
+        fac = 50/vectors.vocab[word].count
         sen_vector1 += fac * vectors[word]
     avg1 = np.array(sen_vector1)/len(s1)
 
     sen_vector2 = [0] * vector_size
     for word in s2:
-        fac = 1/vectors.vocab[word].count
+        fac = 50/vectors.vocab[word].count
         sen_vector2 += fac * vectors[word]
     avg2 = np.array(sen_vector2)/len(s2)
 
     return 1 - spatial.distance.cosine(avg1, avg2)
 
-def calc_similarity(data, model, doc_count, avgdl):
+def calc_similarity(data, model):
     '''Calculates the similarity for each question pair, returning this.'''
-    return data.apply(lambda row: string_similarity(model, row.question1, row.question2, doc_count, avgdl), axis=1)
-
-def calc_B25(data, model, doc_count, avgdl):
-    return data.apply(lambda row: B25_score(row.question1, row.question2, model, doc_count, avgdl),axis=1)
+    return data.apply(lambda row: string_similarity(model, row.question1, row.question2), axis=1)
 
 if __name__ == "__main__":
     raw_data = preprocess.clean_process(readdata.read())
@@ -74,28 +73,20 @@ if __name__ == "__main__":
     #     model = word2vec.Word2Vec.load("w2vmodel.mod")
     # except:
     model = make_space(raw_data, partition)
-    doc_count = 2*len(raw_data.index)
-    avgdl = sum(raw_data.question1.apply(len)) + sum(raw_data.question2.apply(len))
-    avgdl /= doc_count
 
     test = raw_data[partition:]
     model.save("w2vmodel.mod")
     
-    # result = calc_similarity(test, model, doc_count, avgdl)
-    result = calc_B25(test, model, doc_count, avgdl)
-    max_res = result.max()
-    min_res = result.min()
-    normalized = result.apply(lambda val: (val-min_res)/(max_res - min_res))
-    print(normalized.max(), normalized.min())
+    result = calc_similarity(test, model)
 
     
     # Counts true positives (similarity > 0.9 and duplicate) and true negatives ()
-    threshold = 0.7
-    tp = sum(np.where((normalized >= threshold) & (test.is_duplicate == 1), 1, 0))
-    tf = sum(np.where((normalized < threshold) & (test.is_duplicate == 0), 1, 0))
-    fp = sum(np.where((normalized >= threshold) & (test.is_duplicate == 0), 1, 0))
-    fn = sum(np.where((normalized < threshold) & (test.is_duplicate == 1), 1, 0))
+    threshold = 0.9
+    tp = sum(np.where((result >= threshold) & (test.is_duplicate == 1), 1, 0))
+    tf = sum(np.where((result < threshold) & (test.is_duplicate == 0), 1, 0))
+    fp = sum(np.where((result >= threshold) & (test.is_duplicate == 0), 1, 0))
+    fn = sum(np.where((result < threshold) & (test.is_duplicate == 1), 1, 0))
 
-    print("Accuracy test: ", (tp+tf)/len(normalized))
+    print("Accuracy test: ", (tp+tf)/len(result))
     print("Precision test: ", tp/(tp+fp))
     print("Recall test: ", tp/(tp + fn))
