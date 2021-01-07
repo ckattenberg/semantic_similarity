@@ -42,6 +42,7 @@ def vectorize_sent(vectors, s1, s2):
     for word in s2:
         sen_vector2 += vectors[word]
     avg2 = np.array(sen_vector2)/len(s2)
+    print(avg2)
 
     return avg1+avg2
 
@@ -59,6 +60,7 @@ if __name__ == "__main__":
     vectors = model.wv
    
     vector_list = []
+    # test = test.loc[test['is_duplicate'] == 1][:200].append(test.loc[test['is_duplicate'] == 0][:200])
 
     for id in test['id']:
         text1 = test['question1'][id]
@@ -68,6 +70,8 @@ if __name__ == "__main__":
 
     X = np.array(vector_list)
     Y = np.array(list(test['is_duplicate']))
+
+    print(test['is_duplicate'].value_counts())
 
     estimator = KerasClassifier(build_fn=create_baseline, epochs=100, batch_size=5, verbose=0)
     kfold = StratifiedKFold(n_splits=10, shuffle=True)
