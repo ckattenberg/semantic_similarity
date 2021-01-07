@@ -31,7 +31,7 @@ def create_baseline():
 
 vector_size = 100
 
-# Calculates average vector of question1 and appends average vector of question 2
+# Returns average vector representation of q1 followed by avg vector representation of q2
 def vectorize_sent(vectors, s1, s2):
     sen_vector1 = [0] * vector_size
     for word in s1:
@@ -64,6 +64,9 @@ def train_test_model(X, Y, partition_size = 0.7, batch_size = 25):
 
     estimator = KerasClassifier(build_fn=create_baseline, epochs=100, batch_size=batch_size, verbose=1)
     estimator.fit(X_train, y_train)
+
+    # User warning, but this doesn't fix it, same predictions:
+    # y_pred = (estimator.predict(X_test) > 0.5).astype('int32')
 
     y_pred = estimator.predict(X_test)
 
@@ -99,6 +102,6 @@ if __name__ == "__main__":
 
     print('--- training/testing ---')
     # print(train_test_model_kfold(X,Y, batch_size = 200))
-    print(train_test_model(X,Y, batch_size = 200))
+    print('Accuracy: ', train_test_model(X,Y, batch_size = 200))
 
 
