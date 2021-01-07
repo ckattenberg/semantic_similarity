@@ -15,6 +15,7 @@ from scipy import spatial
 import numpy as np
 from math import floor
 
+
 from sklearn import datasets, linear_model
 
 # baseline model
@@ -31,10 +32,6 @@ vector_size = 100
 
 # Calculates average vector of question1 and appends average vector of question 2
 def vectorize_sent(vectors, s1, s2):
-    if len(s1) == 0 or len(s2) == 0:
-        print('beep')
-        return 0
-    
     sen_vector1 = [0] * vector_size
     for word in s1:
         sen_vector1 += vectors[word]
@@ -49,11 +46,11 @@ def vectorize_sent(vectors, s1, s2):
 
 if __name__ == "__main__":
     raw_data = preprocess.clean_process(readdata.read())
-    partition = floor(len(raw_data.index)*0.7)
+    partition = floor(len(raw_data.index)*1)
     try:
         model = word2vec.Word2Vec.load("w2vmodel.mod")
     except:
-        model = make_space(raw_data, partition)
+        model = w2vec.make_space(raw_data, partition)
 
     model.save("w2vmodel.mod")
     vectors = model.wv
