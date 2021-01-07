@@ -26,7 +26,7 @@ def B25_score(Q, D, model, doc_count, avgdl):
 def IDF_calc(word, model, doc_count):
     q = model.wv.vocab[word].count
     ans = log((doc_count - q + 0.5)/(q + 0.5) + 1)
-    return max(ans, 0)
+    return max(ans, 0.01)
 
 
 def make_space(data, partition):
@@ -86,10 +86,11 @@ if __name__ == "__main__":
     max_res = result.max()
     min_res = result.min()
     normalized = result.apply(lambda val: (val-min_res)/(max_res - min_res))
+    print(normalized.max(), normalized.min())
 
     
     # Counts true positives (similarity > 0.9 and duplicate) and true negatives ()
-    threshold = 0.6
+    threshold = 0.7
     tp = sum(np.where((normalized >= threshold) & (test.is_duplicate == 1), 1, 0))
     tf = sum(np.where((normalized < threshold) & (test.is_duplicate == 0), 1, 0))
     fp = sum(np.where((normalized >= threshold) & (test.is_duplicate == 0), 1, 0))
