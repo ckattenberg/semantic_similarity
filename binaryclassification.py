@@ -21,7 +21,7 @@ from sklearn import datasets, linear_model
 def create_baseline():
 	# create model
 	model = Sequential()
-	model.add(Dense(200, activation='relu'))
+	model.add(Dense(200, input_dim=200, activation='relu'))
 	model.add(Dense(1, activation='sigmoid'))
 	# Compile model
 	model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -55,25 +55,24 @@ if __name__ == "__main__":
     except:
         model = make_space(raw_data, partition)
 
-    test = raw_data[partition:]
     model.save("w2vmodel.mod")
     vectors = model.wv
    
     vector_list = []
-    # test = test.loc[test['is_duplicate'] == 1][:200].append(test.loc[test['is_duplicate'] == 0][:200])
 
-    for id in test['id']:
-        text1 = test['question1'][id]
-        text2 = test['question2'][id]
+    # Create list of vectors corresponding to the combined vector of q1 and q2.
+    for id in raw_data['id']:
+        text1 = raw_data['question1'][id]
+        text2 = raw_data['question2'][id]
         vector_list.append(vectorize_sent(vectors, text1, text2))
         
-
+    
     X = np.array(vector_list)
-    Y = np.array(list(test['is_duplicate']))
+    Y = np.array(list(raw_data['is_duplicate']))
 
     print('--- testing ---')
-    estimator = KerasClassifier(build_fn=create_baseline, epochs=100, batch_size=25, verbose=1)
+    estimator = KerasClassifier(build_fn=create_baseline, epochs=100, batch_size=200, verbose=1)
     kfold = StratifiedKFold(n_splits=10, shuffle=True)
-    results = cross_val_score(estimator, X[:50000], Y[:50000], cv=kfold)
+    results = cross_val_score(estimator, X, Y, cv=kfold)
     print("Baseline: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
 
