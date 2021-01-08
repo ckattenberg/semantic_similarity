@@ -15,6 +15,8 @@ from scipy import spatial
 import numpy as np
 from math import floor
 from sklearn.metrics import accuracy_score
+import doc2vec
+from progress.bar import Bar
 
 
 from sklearn import datasets, linear_model
@@ -32,7 +34,7 @@ def create_baseline():
 vector_size = 100
 
 # Returns average vector representation of q1 followed by avg vector representation of q2
-def vectorize_sent(vectors, s1, s2):
+def vectorize_w2v(vectors, s1, s2):
     sen_vector1 = [0] * vector_size
     for word in s1:
         sen_vector1 += vectors[word]
@@ -45,6 +47,32 @@ def vectorize_sent(vectors, s1, s2):
     res = np.concatenate((avg1,avg2))
     return res
 
+# Returns a list of combined vectors of q1 and q2
+def vectorize_data_w2v(data, vectors):
+    vector_list = []
+    
+    with Bar('w2v_vectorizing', max=len(data)) as bar:
+        for index, row in data.iterrows():
+            text1 = row['question1']
+            text2 = row['question2']
+            vector_list.append(vectorize_w2v(vectors, text1, text2))
+            bar.next()
+        scaler = StandardScaler()
+        vector_list = scaler.fit_transform(vector_list)
+    return np.array(vector_list)
+
+def vectorize_data_d2v(data, model):
+    vector_list = []
+    with Bar('d2v_vectorizing', max=len(data)) as bar:
+        for index, row in data.iterrows():
+            text1 = row['question1']
+            text2 = row['question2']
+            vector_list.append(doc2vec.doc2vec(model, text1, text2))
+            bar.next()
+    return np.array(vector_list)
+
+
+
 # Takes X and Y as input, where X = list of list with combined vectors of q1 and q2, and Y = list of is_duplicate values.
 # Split dataset into 90% train 10% test, trains data on train data, test on test data,
 # Repeat 10 times (kfold), calculate accuracy for each fold, return average accuracy of all folds.
@@ -54,29 +82,14 @@ def train_test_model_kfold(X, Y, batch_size = 25):
     results = cross_val_score(estimator, X, Y, cv=kfold)
     return (results.mean()*100, results.std()*100)
 
-# Trains model on X_train and y_train, predicts results of X_test, returns accuracy score of correct predictions.
-def train_test_model(X, Y, partition_size = 0.7, batch_size = 25):
-    partition = floor(len(X)*partition_size)
-    X_train = X[:partition]
-    X_test = X[partition:]
-    y_train = Y[:partition]
-    y_test = Y[partition:]
-
-    # Scaling data barely improves accuracy:
-    # scaler = preprocessing.StandardScaler()
-    # X_train_scaled = scaler.fit_transform(X_train)
-    # X_test_scaled = scaler.fit_transform(X_test)
-
+def train_model(X_train, y_train, batch_size = 200):
     estimator = KerasClassifier(build_fn=create_baseline, epochs=100, batch_size=batch_size, verbose=1)
     estimator.fit(X_train, y_train)
+    return estimator
 
-    # User warning, but this doesn't fix it, same predictions:
-    # y_pred = (estimator.predict(X_test) > 0.5).astype('int32')
-
-    y_pred = estimator.predict(X_test)
-
-    return accuracy_score(y_test,y_pred)
-
+def test_model(X_test, y_test, model):
+    y_pred = model.predict(X_test)
+    return accuracy_score(y_test, y_pred)
 
 if __name__ == "__main__":
     print('--- reading data ---')
@@ -85,26 +98,44 @@ if __name__ == "__main__":
 
     try:
         print('--- loading model ---')
-        model = word2vec.Word2Vec.load("w2vmodel.mod")
-        
+        w2v_model = word2vec.Word2Vec.load("w2vmodel.mod")
+        print('w2v_model loaded')
     except:
         print('--- embedding ---')
-        model = w2vec.make_space(raw_data, partition)
+        w2v_model = w2vec.make_space(raw_data, partition)
 
-    model.save("w2vmodel.mod")
-    vectors = model.wv
+
+    w2v_model.save("w2vmodel.mod")
+    w2v_vectors = w2v_model.wv
+
+    d2v_model = doc2vec.load_model("doc2vec.model")
+    print('d2v_model loaded')
    
-    vector_list = []
-    print('--- preparing data ---')
-    # Create list of combined vector of q1 and q2. List index corresponds to data entry.
-    for id in raw_data['id']:
-        text1 = raw_data['question1'][id]
-        text2 = raw_data['question2'][id]
-        vector_list.append(vectorize_sent(vectors, text1, text2))
+    # Split raw_data into train/test set
+    X_train, y_train, X_test, y_test = preprocess.split_train_test(raw_data)
 
-    X = np.array(vector_list)
-    Y = np.array(list(raw_data['is_duplicate']))
+    print('--- vectorizing data ---')
+    ''' Vectorize w2v '''
+    X_train_w2v_vectorized = vectorize_data_w2v(X_train, w2v_vectors)
+    X_test_w2v_vectorized = vectorize_data_w2v(X_test, w2v_vectors)
 
-    print('--- training/testing ---')
+    ''' Vectorize d2v '''
+    # X_train_d2v_vectorized = vectorize_data_d2v(X_train, d2v_model)
+    # X_test_d2v_vectorized = vectorize_data_d2v(X_test, d2v_model)
+
+    # Train model on training set
+    print('--- training model ---')
+    model_w2v = train_model(X_train_w2v_vectorized, y_train)
+    # model_d2v = train_model(X_train_d2v_vectorized, y_train)
+
+    # Test model on test set
+    print('--- testing model ---')
+    accuracy = test_model(X_test_w2v_vectorized, y_test, model_w2v)
+    # accuracy = test_model(X_test_d2v_vectorized, y_test, model_d2v)
+
+    ''' Test Kfold '''
+    # X = np.concatenate((X_train_vectorized, X_test_vectorized))
+    # Y = np.append(y_train, y_test)
     # print(train_test_model_kfold(X,Y, batch_size = 200))
-    print('Accuracy: ', train_test_model(X,Y, batch_size = 200))
+
+    print('Accuracy: ', accuracy)
