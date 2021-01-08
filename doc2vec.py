@@ -52,14 +52,14 @@ def doc2vec(model, sent):
 	return(vector)
 
 # Create a new model with the dataset and save it to disk
-def create_model():
+def create_model(filename):
 	# Read in the data
 	training_corpus = read_data()
 	tagged_training_corpus = list(read_corpus(training_corpus))
 
 	# Train the model and save it to disk
 	model = doc2vec_model(tagged_training_corpus)
-	model.save("doc2vec.model")
+	model.save(filename)
 
 
 # Main function
