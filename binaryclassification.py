@@ -17,6 +17,10 @@ from math import floor
 from sklearn.metrics import accuracy_score
 import doc2vec
 from progress.bar import Bar
+from sklearn import naive_bayes
+from sklearn.svm import SVC
+from sklearn.neural_network import MLPClassifier
+
 
 
 from sklearn import datasets, linear_model
@@ -82,6 +86,8 @@ def train_test_model_kfold(X, Y, batch_size = 25):
 
 def train_model(X_train, y_train, batch_size = 200):
     estimator = KerasClassifier(build_fn=create_baseline, epochs=100, batch_size=batch_size, verbose=1)
+    # scaler = preprocessing.MinMaxScaler()
+    # X_train= scaler.fit_transform(X_train)
     estimator.fit(X_train, y_train)
     return estimator
 
@@ -114,26 +120,27 @@ if __name__ == "__main__":
 
     print('--- vectorizing data ---')
     ''' Vectorize w2v '''
-    X_train_w2v_vectorized = vectorize_data_w2v(X_train, w2v_vectors)
-    X_test_w2v_vectorized = vectorize_data_w2v(X_test, w2v_vectors)
+    # X_train_w2v_vectorized = vectorize_data_w2v(X_train, w2v_vectors)
+    # X_test_w2v_vectorized = vectorize_data_w2v(X_test, w2v_vectors)
 
     ''' Vectorize d2v '''
-    # X_train_d2v_vectorized = vectorize_data_d2v(X_train, d2v_model)
-    # X_test_d2v_vectorized = vectorize_data_d2v(X_test, d2v_model)
+    X_train_d2v_vectorized = vectorize_data_d2v(X_train, d2v_model)
+    X_test_d2v_vectorized = vectorize_data_d2v(X_test, d2v_model)
 
     # Train model on training set
     print('--- training model ---')
-    model_w2v = train_model(X_train_w2v_vectorized, y_train)
-    # model_d2v = train_model(X_train_d2v_vectorized, y_train)
+    # model_w2v = train_model(X_train_w2v_vectorized, y_train)
+    model_d2v = train_model(X_train_d2v_vectorized, y_train)
 
     # Test model on test set
     print('--- testing model ---')
-    accuracy = test_model(X_test_w2v_vectorized, y_test, model_w2v)
-    # accuracy = test_model(X_test_d2v_vectorized, y_test, model_d2v)
+    # accuracy_w2v = test_model(X_test_w2v_vectorized, y_test, model_w2v)
+    accuracy_d2v = test_model(X_test_d2v_vectorized, y_test, model_d2v)
 
     ''' Test Kfold '''
     # X = np.concatenate((X_train_d2v_vectorized, X_test_d2v_vectorized))
     # Y = np.append(y_train, y_test)
     # print(train_test_model_kfold(X,Y, batch_size = 200))
 
-    print('Accuracy: ', accuracy)
+    # print('Accuracy w2v: ', accuracy_w2v)
+    print('Accuracy d2v: ', accuracy_d2v)
