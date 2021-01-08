@@ -31,9 +31,11 @@ vector_size = 100
 # def calc_B25(data, model, doc_count, avgdl):
 #     return data.apply(lambda row: B25_score(row.question1, row.question2, model, doc_count, avgdl),axis=1)
 
-def make_space(data, partition):
+def make_space(data, partition=None):
     '''Combines the two lists of questions to make a single list, the result is a list of list of tokens.
     This is what the model needs for its vocab training.'''
+    if partition == None:
+        partition = floor(len(data.index)*0.7)
     traindata = data[:partition]
     vocab = list(data.question1.values) + list(data.question2.values)
     sentences = list(traindata.question1.values) + list(traindata.question2.values)
@@ -66,27 +68,27 @@ def calc_similarity(data, model):
     '''Calculates the similarity for each question pair, returning this.'''
     return data.apply(lambda row: string_similarity(model, row.question1, row.question2), axis=1)
 
-if __name__ == "__main__":
-    raw_data = preprocess.clean_process(readdata.read())
-    partition = floor(len(raw_data.index)*0.7)
-    # try:
-    #     model = word2vec.Word2Vec.load("w2vmodel.mod")
-    # except:
-    model = make_space(raw_data, partition)
-
-    test = raw_data[partition:]
-    model.save("w2vmodel.mod")
-    
-    result = calc_similarity(test, model)
-
-    
-    # Counts true positives (similarity > 0.9 and duplicate) and true negatives ()
-    threshold = 0.9
-    tp = sum(np.where((result >= threshold) & (test.is_duplicate == 1), 1, 0))
-    tf = sum(np.where((result < threshold) & (test.is_duplicate == 0), 1, 0))
-    fp = sum(np.where((result >= threshold) & (test.is_duplicate == 0), 1, 0))
-    fn = sum(np.where((result < threshold) & (test.is_duplicate == 1), 1, 0))
+def experiment(data, threshold=0.9):
+    '''Counts results, then calculates resulting statistics.'''
+    tp = sum(np.where((result >= threshold) & (data.is_duplicate == 1), 1, 0))
+    tf = sum(np.where((result < threshold) & (data.is_duplicate == 0), 1, 0))
+    fp = sum(np.where((result >= threshold) & (data.is_duplicate == 0), 1, 0))
+    fn = sum(np.where((result < threshold) & (data.is_duplicate == 1), 1, 0))
 
     print("Accuracy test: ", (tp+tf)/len(result))
     print("Precision test: ", tp/(tp+fp))
     print("Recall test: ", tp/(tp + fn))
+    return tp, tf, fp, fn
+
+if __name__ == "__main__":
+    raw_data = preprocess.clean_process(readdata.read())
+    try:
+        model = word2vec.Word2Vec.load("w2vmodel.mod")
+    except:
+        model = make_space(raw_data)
+
+    test = raw_data[floor(len(raw_data.index)*0.7):]
+    model.save("w2vmodel.mod")
+    
+    result = calc_similarity(test, model)
+    experiment(test)

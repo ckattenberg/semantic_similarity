@@ -2,6 +2,7 @@ from nltk.tokenize import word_tokenize, RegexpTokenizer
 import pandas as pd
 from readdata import read
 from math import floor
+from nltk.stem import PorterStemmer 
 
 def process(data):
     '''Applies standard nltk word tokenizer to the questions, replacing the original
@@ -35,6 +36,9 @@ def untokenized_split(data):
     test = pd.DataFrame(data[partition:])
 
     return train, test
+
+def stem(data):
+    '''Stems the words in the sentences. Requires tokenization first.'''
 
 if __name__ == "__main__":
    print(clean_process(read()[:10]))
