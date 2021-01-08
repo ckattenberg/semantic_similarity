@@ -62,6 +62,7 @@ def load_vectors():
 def make_parameters(vectors, raw_data):
     X = np.array(vectors)
     Y = np.array(list(raw_data['is_duplicate']))
+    print(X)
     return X, Y
 
 def train_test_model(X, Y, partition_size = 0.7, batch_size = 25):

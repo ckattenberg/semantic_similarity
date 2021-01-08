@@ -81,7 +81,7 @@ def experiment(data, threshold=0.9):
     return tp, tf, fp, fn
 
 if __name__ == "__main__":
-    raw_data = preprocess.clean_process(readdata.read())
+    raw_data = preprocess.stem_data(preprocess.clean_process(readdata.read()))
     try:
         model = word2vec.Word2Vec.load("w2vmodel.mod")
     except:
