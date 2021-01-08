@@ -51,6 +51,7 @@ def doc2vec(model, sent):
 	vector = model.infer_vector(sent)
 	return(vector)
 
+# Create a new model with the dataset and save it to disk
 def create_model():
 	# Read in the data
 	training_corpus = read_data()
