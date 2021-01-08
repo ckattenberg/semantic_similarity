@@ -57,8 +57,8 @@ def vectorize_data_w2v(data, vectors):
             text2 = row['question2']
             vector_list.append(vectorize_w2v(vectors, text1, text2))
             bar.next()
-        scaler = StandardScaler()
-        vector_list = scaler.fit_transform(vector_list)
+    # scaler = StandardScaler()
+    # vector_list = scaler.fit_transform(vector_list)
     return np.array(vector_list)
 
 def vectorize_data_d2v(data, model):
@@ -70,8 +70,6 @@ def vectorize_data_d2v(data, model):
             vector_list.append(doc2vec.doc2vec(model, text1, text2))
             bar.next()
     return np.array(vector_list)
-
-
 
 # Takes X and Y as input, where X = list of list with combined vectors of q1 and q2, and Y = list of is_duplicate values.
 # Split dataset into 90% train 10% test, trains data on train data, test on test data,
@@ -134,7 +132,7 @@ if __name__ == "__main__":
     # accuracy = test_model(X_test_d2v_vectorized, y_test, model_d2v)
 
     ''' Test Kfold '''
-    # X = np.concatenate((X_train_vectorized, X_test_vectorized))
+    # X = np.concatenate((X_train_d2v_vectorized, X_test_d2v_vectorized))
     # Y = np.append(y_train, y_test)
     # print(train_test_model_kfold(X,Y, batch_size = 200))
 
