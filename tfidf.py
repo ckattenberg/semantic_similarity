@@ -1,39 +1,62 @@
-from readdata import read
-from preprocess import process, clean_process, clean_split
-from collections import defaultdict
+import nltk, string
 from sklearn.feature_extraction.text import TfidfVectorizer
+from readdata import read
+import preprocess
+from collections import defaultdict
 from sklearn.metrics import accuracy_score, precision_score, recall_score
+from sklearn.metrics.pairwise import cosine_similarity
+from progress.bar import Bar
+
+
+stemmer = nltk.stem.porter.PorterStemmer()
+remove_punctuation_map = dict((ord(char), None) for char in string.punctuation)
+
+def stem_tokens(tokens):
+    return [stemmer.stem(item) for item in tokens]
+
+'''remove punctuation, lowercase, stem'''
+def normalize(text):
+    return stem_tokens(nltk.word_tokenize(text.lower().translate(remove_punctuation_map)))
+
+vectorizer = TfidfVectorizer(tokenizer=normalize)
 
 def cosine_sim(text1, text2):
-   return ((tfidf*tfidf.T).A)[0,1]
+    tfidf = vectorizer.transform([text1, text2])
+    return ((tfidf * tfidf.T).A)[0,1]
 
-vectorizer = TfidfVectorizer(min_df=1, stop_words='english')   
+def predict_cosine(X_test):
+    y_pred = []
+    with Bar('scoring', max=len(X_test)) as bar:
+        for index, row in X_test.iterrows():
+            text1 = row['question1']
+            text2 = row['question2']
+            
+            score = cosine_sim(text1, text2)
+
+            # Threshold
+            if score > 0.8:
+                y_pred.append(1)
+            else:
+                y_pred.append(0)
+            bar.next()
+    return y_pred
 
 if __name__ == "__main__":
-   data = clean_split(read())
-   print(data[1])
+    print('--- reading data ---')
+    data = read()
+    X_train, y_train, X_test, y_test = preprocess.split_train_test(data)
+    corpus = list(X_train['question1']) + list(X_train['question2'])
 
-   # correct = list(data.is_duplicate)
-   result = []
+    print('--- vectorizing ---')
+    # Vectorize and train on corpus
+    vectorizer.fit_transform(corpus)
+    
+    print('--- testing model ---')
+    # Predict similarities on test set
+    y_pred = predict_cosine(X_test)
 
-   # Put all the sentences in the dataset in a large corpus list.
-   corpus = list(data['question1']) + list(data['question2'])
-
-   X = vectorizer.fit(corpus)
-
-   for id in data['id']:
-      text1 = data['question1'][id]
-      text2 = data['question2'][id]
-      tfidf = X.transform([text1, text2])
-      score = cosine_sim(tfidf)
-
-      # Threshold
-      if score > 0.85:
-         result.append(1)
-      else:
-         result.append(0)
+    # Compare predictions actual correct answers of test set
+    print('Accuracy: ', accuracy_score(y_test, y_pred))
+    print('Precision: ', precision_score(y_test, y_pred))
+    print('Recall: ', recall_score(y_test, y_pred))
    
-print('Accuracy: ', accuracy_score(correct, result))
-print('Precision: ', precision_score(correct, result))
-print('Recall: ', recall_score(correct, result))
-
