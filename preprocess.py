@@ -2,6 +2,7 @@ from nltk.tokenize import word_tokenize, RegexpTokenizer
 import pandas as pd
 from readdata import read
 from math import floor
+from nltk.stem.snowball import SnowballStemmer
 
 def process(data):
     '''Applies standard nltk word tokenizer to the questions, replacing the original
@@ -35,6 +36,19 @@ def untokenized_split(data):
     test = pd.DataFrame(data[partition:])
 
     return train, test
+
+def stem_sentence(sentence, stemmer):
+    result = []
+    for word in sentence:
+        result.append(stemmer.stem(word))
+    return result
+
+def stem_data(data):
+    '''Stems the words in the sentences. Requires tokenization first.'''
+    stemmer = SnowballStemmer("english")
+    data.question1 = data.question1.apply(lambda sentence: stem_sentence(sentence, stemmer))
+    data.question2 = data.question2.apply(lambda sentence: stem_sentence(sentence, stemmer))
+    return data
 
 if __name__ == "__main__":
    print(clean_process(read()[:10]))
