@@ -2,7 +2,11 @@ from nltk.tokenize import word_tokenize, RegexpTokenizer
 import pandas as pd
 from readdata import read
 from math import floor
+<<<<<<< HEAD
 from nltk.stem.snowball import SnowballStemmer
+=======
+import numpy as np
+>>>>>>> stefan
 
 def process(data):
     '''Applies standard nltk word tokenizer to the questions, replacing the original
@@ -49,6 +53,15 @@ def stem_data(data):
     data.question1 = data.question1.apply(lambda sentence: stem_sentence(sentence, stemmer))
     data.question2 = data.question2.apply(lambda sentence: stem_sentence(sentence, stemmer))
     return data
+    
+def split_train_test(data, partition_size = 0.7):
+    partition = floor(len(data)*partition_size)
+    X_train = data[['question1','question2']][:partition]
+    X_test = data[['question1','question2']][partition:]
+    y_train = np.array(data['is_duplicate'][:partition])
+    y_test = np.array(data['is_duplicate'][partition:])
+
+    return X_train, y_train, X_test, y_test
 
 if __name__ == "__main__":
    print(clean_process(read()[:10]))

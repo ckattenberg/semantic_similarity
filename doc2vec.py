@@ -46,10 +46,11 @@ def load_model(filepath):
 	model = gensim.models.Doc2Vec.load(filepath)
 	return(model)
 
-# Use a model to get vector embedding of a sentence sent
-def doc2vec(model, sent):
-	vector = model.infer_vector(sent)
-	return(vector)
+def doc2vec(model, sent1, sent2):
+	vector_q1 = np.array(model.infer_vector(sent1))
+	vector_q2 = np.array(model.infer_vector(sent2))
+
+	return np.concatenate((vector_q1,vector_q2))
 
 # Create a new model with the dataset and save it to disk
 def create_model(filename):
