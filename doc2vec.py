@@ -41,13 +41,24 @@ def doc2vec_model(train_data):
 
 	return(model)
 
+# Load a model from filepath
 def load_model(filepath):
 	model = gensim.models.Doc2Vec.load(filepath)
 	return(model)
 
+# Use a model to get vector embedding of a sentence sent
 def doc2vec(model, sent):
 	vector = model.infer_vector(sent)
 	return(vector)
+
+def create_model():
+	# Read in the data
+	training_corpus = read_data()
+	tagged_training_corpus = list(read_corpus(training_corpus))
+
+	# Train the model and save it to disk
+	model = doc2vec_model(tagged_training_corpus)
+	model.save("doc2vec.model")
 
 
 # Main function
