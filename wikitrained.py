@@ -23,11 +23,11 @@ def get_vectors(raw_data, model_vectors):
     vector_list = []
     print('--- preparing data ---')
     # Create list of combined vector of q1 and q2. List index corresponds to data entry.
-    for id in raw_data['id']:
-        text1 = raw_data['question1'][id]
-        text2 = raw_data['question2'][id]
+    for index, data in raw_data.iterrows():
+        text1 = data['question1']
+        text2 = data['question2']
         vector_list.append(vectorize_sent(model_vectors, text1, text2))
-    return vector_list
+    return np.array(vector_list)
 
 def vectorize_sent(vectors, s1, s2):
     sen_vector1 = [0] * vector_size
@@ -90,54 +90,37 @@ def train_test_model(X, Y, partition_size = 0.7, batch_size = 25):
 
     return accuracy_score(y_test,y_pred)
 
-def string_similarity(model_vectors, s1, s2):
-    '''Calculates the similarity of a "sentence", a list of words, by summing
-    the word-vectors of those words and taking the average.'''
-    vectors = model_vectors
-    sen_vector1 = [0] * vector_size
-    for word in s1:
-        try:
-            fac = 1/vectors.vocab[word].count**3
-            sen_vector1 += fac * vectors[word]
-        except:
-            print('missed')
-            continue
-    avg1 = np.array(sen_vector1)/len(s1)
+def prepare_data(model_vectors, raw_data):
+    X_train, y_train, X_test, y_test = preprocess.split_train_test(raw_data)
 
-    sen_vector2 = [0] * vector_size
-    for word in s2:
-        try:
-            fac = 1/vectors.vocab[word].count**3
-            sen_vector2 += fac * vectors[word]
-        except:
-            print('missed')
-            continue
-    avg2 = np.array(sen_vector2)/len(s2)
+    print('--- vectorizing data ---')
+    ''' Vectorize w2v '''
+    X_train_w2v_vectorized = get_vectors(X_train, model_vectors)
+    X_test_w2v_vectorized = get_vectors(X_test, model_vectors)
 
-    return 1 - cosine(avg1, avg2)
+    return X_train, y_train, X_test, y_test, X_train_w2v_vectorized, X_test_w2v_vectorized
 
-def experiment(X, Y):
-    print('--- testing ---')
-    estimator = KerasClassifier(build_fn=bc.create_baseline, epochs=100, batch_size=200, verbose=1)
-    kfold = StratifiedKFold(n_splits=10, shuffle=True)
-    results = cross_val_score(estimator, X, Y, cv=kfold)
-    print("Baseline: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
+
+def train_test_model(X_train_w2v_vectorized, y_train, X_test_w2v_vectorized, y_test):
+    # Train model on training set
+    print('--- training model ---')
+    model_w2v = bc.train_model(X_train_w2v_vectorized, y_train)
+    # model_d2v = train_model(X_train_d2v_vectorized, y_train)
+
+    # Test model on test set
+    print('--- testing model ---')
+    accuracy = bc.test_model(X_test_w2v_vectorized, y_test, model_w2v)
+    return accuracy
 
 if __name__ == "__main__":
     raw_data = preprocess.clean_process(readdata.read())
     model_vectors = load_vectors()
 
-    for i in range(100):
-        s1 = raw_data.question1[i]
-        s2 = raw_data.question2[i]
-        print(s1, '\n', s2, '\n', string_similarity(model_vectors, s1, s2), '\n', raw_data.is_duplicate[i], '\n')
 
-    model_vectors = load_vectors().vectors
-    data_vectors = get_vectors(raw_data, model_vectors)
-    X, Y = make_parameters(data_vectors, raw_data)
+    X_train, y_train, X_test, y_test, X_train_w2v_vectorized, X_test_w2v_vectorized = prepare_data(model_vectors, raw_data)
 
     print('--- training/testing ---')
     # print(train_test_model_kfold(X,Y, batch_size = 200))
-    print('Accuracy: ', bc.train_test_model(X, Y, batch_size = 200))
+    print('Accuracy: ', train_test_model(X_train_w2v_vectorized, y_train, X_test_w2v_vectorized, y_test))
 
     
