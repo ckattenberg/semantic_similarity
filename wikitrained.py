@@ -10,6 +10,7 @@ from sklearn.model_selection import StratifiedKFold
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 from sklearn.metrics import accuracy_score
+from scipy.spatial.distance import cosine
 
 '''
 Modification using binaryclassification.py using a Wikipedia trained vector list instead.
@@ -32,7 +33,8 @@ def vectorize_sent(vectors, s1, s2):
     sen_vector1 = [0] * vector_size
     for word in s1:
         try:
-            sen_vector1 += vectors.get_word_vector(word)
+            fac = 1/vectors.vocab[word].count**3
+            sen_vector1 += fac * vectors.get_word_vector(word)
         except:
             continue
     avg1 = np.array(sen_vector1)/len(s1)
@@ -40,11 +42,13 @@ def vectorize_sent(vectors, s1, s2):
     sen_vector2 = [0] * vector_size
     for word in s2:
         try:
-            sen_vector2 += vectors.get_word_vector(word)
+            fac = 1/vectors.vocab[word].count**3
+            sen_vector2 += fac * vectors.get_word_vector(word)
         except:
             continue
     avg2 = np.array(sen_vector2)/len(s2)
     res = np.concatenate((avg1,avg2))
+
     return res
 
 def load_vectors():
@@ -62,7 +66,6 @@ def load_vectors():
 def make_parameters(vectors, raw_data):
     X = np.array(vectors)
     Y = np.array(list(raw_data['is_duplicate']))
-    print(X)
     return X, Y
 
 def train_test_model(X, Y, partition_size = 0.7, batch_size = 25):
@@ -87,6 +90,32 @@ def train_test_model(X, Y, partition_size = 0.7, batch_size = 25):
 
     return accuracy_score(y_test,y_pred)
 
+def string_similarity(model_vectors, s1, s2):
+    '''Calculates the similarity of a "sentence", a list of words, by summing
+    the word-vectors of those words and taking the average.'''
+    vectors = model_vectors
+    sen_vector1 = [0] * vector_size
+    for word in s1:
+        try:
+            fac = 1/vectors.vocab[word].count**3
+            sen_vector1 += fac * vectors[word]
+        except:
+            print('missed')
+            continue
+    avg1 = np.array(sen_vector1)/len(s1)
+
+    sen_vector2 = [0] * vector_size
+    for word in s2:
+        try:
+            fac = 1/vectors.vocab[word].count**3
+            sen_vector2 += fac * vectors[word]
+        except:
+            print('missed')
+            continue
+    avg2 = np.array(sen_vector2)/len(s2)
+
+    return 1 - cosine(avg1, avg2)
+
 def experiment(X, Y):
     print('--- testing ---')
     estimator = KerasClassifier(build_fn=bc.create_baseline, epochs=100, batch_size=200, verbose=1)
@@ -96,6 +125,13 @@ def experiment(X, Y):
 
 if __name__ == "__main__":
     raw_data = preprocess.clean_process(readdata.read())
+    model_vectors = load_vectors()
+
+    for i in range(100):
+        s1 = raw_data.question1[i]
+        s2 = raw_data.question2[i]
+        print(s1, '\n', s2, '\n', string_similarity(model_vectors, s1, s2), '\n', raw_data.is_duplicate[i], '\n')
+
     model_vectors = load_vectors().vectors
     data_vectors = get_vectors(raw_data, model_vectors)
     X, Y = make_parameters(data_vectors, raw_data)
