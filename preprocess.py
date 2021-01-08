@@ -2,11 +2,8 @@ from nltk.tokenize import word_tokenize, RegexpTokenizer
 import pandas as pd
 from readdata import read
 from math import floor
-<<<<<<< HEAD
 from nltk.stem.snowball import SnowballStemmer
-=======
 import numpy as np
->>>>>>> stefan
 
 def process(data):
     '''Applies standard nltk word tokenizer to the questions, replacing the original
