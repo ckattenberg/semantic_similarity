@@ -51,9 +51,8 @@ def doc2vec(model, sent1, sent2):
 	return np.concatenate((vector_q1,vector_q2))
 
 # Create a new model with the dataset and save it to disk
-def create_model(filename):
-	# Read in the data
-	training_corpus = read_data()
+def create_model(training_corpus, filename):
+	# Tag the training corpus
 	tagged_training_corpus = list(read_corpus(training_corpus))
 
 	# Train the model and save it to disk
