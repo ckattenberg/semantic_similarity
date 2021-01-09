@@ -11,8 +11,11 @@ if __name__ == "__main__":
 		print("Found an existing model.")
 	except:
 		print("Could not find an existing model. Creating a new one. (Saved as doc2vec.model)")
+		print("Reading in data")
 		data = readdata.read()
+		print("Cleaning data")
 		training_data = preprocess.clean_process(data)
 		training_corpus = d2v.get_corpus(training_data)
+		print("Training model")
 		d2v.create_model(training_corpus, "doc2vec.model")
 		
