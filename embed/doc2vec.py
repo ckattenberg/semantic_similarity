@@ -18,6 +18,7 @@ import numpy as np
 # 	return(training_corpus)
 
 def get_corpus(data):
+	# In gensim, a "corpus" is a list of documents.
 	training_corpus = list(data['question1']) + list(data['question2'])
 	return(training_corpus)
 
@@ -55,7 +56,9 @@ def doc2vec(model, sent1, sent2):
 	return np.concatenate((vector_q1,vector_q2))
 
 # Create a new model with the dataset and save it to disk
-def create_model(training_corpus, filename):
+def create_model(data, filename):
+	# Turn data into corpus
+	training_corpus = get_corpus(data)
 	# Tag the training corpus
 	tagged_training_corpus = list(read_corpus(training_corpus))
 
