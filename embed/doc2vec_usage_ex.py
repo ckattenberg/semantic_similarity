@@ -1,4 +1,4 @@
-import doc2vec
+from . import doc2vec
 
 doc2vec.create_model("doc2vec.model")
 model = doc2vec.load_model("doc2vec.model")

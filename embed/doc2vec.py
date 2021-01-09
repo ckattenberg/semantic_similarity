@@ -5,19 +5,17 @@ doc2vec(model, sent) to get the vector embedding of a sentence sent.
 """
 import os
 import gensim
-import readdata
-import preprocess
 from scipy.spatial import distance
 import numpy as np
 
 # Read in the data and preprocess it.
-def read_data():
-	print("Reading in the data.")
-	data = readdata.read()[:500]
-	training_data = preprocess.clean_process(data)
-	# In gensim, a "corpus" is a list of documents.
-	training_corpus = list(training_data['question1']) + list(training_data['question2'])
-	return(training_corpus)
+# def read_data():
+# 	print("Reading in the data.")
+# 	data = readdata.read()
+# 	training_data = preprocess.clean_process(data)
+# 	# In gensim, a "corpus" is a list of documents.
+# 	training_corpus = list(training_data['question1']) + list(training_data['question2'])
+# 	return(training_corpus)
 
 # Turn corpus into TaggedDocument (as input for model training)
 def read_corpus(corpus, tokens_only=False):
@@ -61,6 +59,10 @@ def create_model(filename):
 	# Train the model and save it to disk
 	model = doc2vec_model(tagged_training_corpus)
 	model.save(filename)
+
+def load_model(filename = "doc2vec.model"):
+    model = gensim.models.Doc2Vec.load("doc2vec.model")
+    return model
 
 
 # Main function

@@ -1,5 +1,4 @@
 import pandas
-import w2vec
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.wrappers.scikit_learn import KerasClassifier
@@ -8,14 +7,12 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import StandardScaler
 from sklearn import preprocessing
-import preprocess
-import readdata
 from gensim.models import word2vec
 from scipy import spatial
 import numpy as np
 from math import floor
 from sklearn.metrics import accuracy_score
-import doc2vec
+from . import doc2vec
 from progress.bar import Bar
 from sklearn import naive_bayes
 from sklearn.svm import SVC
@@ -96,51 +93,4 @@ def test_model(X_test, y_test, model):
     return accuracy_score(y_test, y_pred)
 
 if __name__ == "__main__":
-    print('--- reading data ---')
-    raw_data = preprocess.clean_process(readdata.read())
-    partition = floor(len(raw_data.index)*1)
-
-    try:
-        print('--- loading model ---')
-        w2v_model = word2vec.Word2Vec.load("w2vmodel.mod")
-        print('w2v_model loaded')
-    except:
-        print('--- embedding ---')
-        w2v_model = w2vec.make_space(raw_data, partition)
-
-
-    w2v_model.save("w2vmodel.mod")
-    w2v_vectors = w2v_model.wv
-
-    d2v_model = doc2vec.load_model("doc2vec.model")
-    print('d2v_model loaded')
-   
-    # Split raw_data into train/test set
-    X_train, y_train, X_test, y_test = preprocess.split_train_test(raw_data)
-
-    print('--- vectorizing data ---')
-    ''' Vectorize w2v '''
-    # X_train_w2v_vectorized = vectorize_data_w2v(X_train, w2v_vectors)
-    # X_test_w2v_vectorized = vectorize_data_w2v(X_test, w2v_vectors)
-
-    ''' Vectorize d2v '''
-    X_train_d2v_vectorized = vectorize_data_d2v(X_train, d2v_model)
-    X_test_d2v_vectorized = vectorize_data_d2v(X_test, d2v_model)
-
-    # Train model on training set
-    print('--- training model ---')
-    # model_w2v = train_model(X_train_w2v_vectorized, y_train)
-    model_d2v = train_model(X_train_d2v_vectorized, y_train)
-
-    # Test model on test set
-    print('--- testing model ---')
-    # accuracy_w2v = test_model(X_test_w2v_vectorized, y_test, model_w2v)
-    accuracy_d2v = test_model(X_test_d2v_vectorized, y_test, model_d2v)
-
-    ''' Test Kfold '''
-    # X = np.concatenate((X_train_d2v_vectorized, X_test_d2v_vectorized))
-    # Y = np.append(y_train, y_test)
-    # print(train_test_model_kfold(X,Y, batch_size = 200))
-
-    # print('Accuracy w2v: ', accuracy_w2v)
-    print('Accuracy d2v: ', accuracy_d2v)
+    pass

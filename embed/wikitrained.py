@@ -1,6 +1,4 @@
-import binaryclassification as bc
-import preprocess
-import readdata
+from . import binaryclassification as bc
 from math import floor
 import numpy as np
 from gensim.models import KeyedVectors
@@ -90,17 +88,6 @@ def train_test_model(X, Y, partition_size = 0.7, batch_size = 25):
 
     return accuracy_score(y_test,y_pred)
 
-def prepare_data(model_vectors, raw_data):
-    X_train, y_train, X_test, y_test = preprocess.split_train_test(raw_data)
-
-    print('--- vectorizing data ---')
-    ''' Vectorize w2v '''
-    X_train_w2v_vectorized = get_vectors(X_train, model_vectors)
-    X_test_w2v_vectorized = get_vectors(X_test, model_vectors)
-
-    return X_train, y_train, X_test, y_test, X_train_w2v_vectorized, X_test_w2v_vectorized
-
-
 def train_test_model(X_train_w2v_vectorized, y_train, X_test_w2v_vectorized, y_test):
     # Train model on training set
     print('--- training model ---')
@@ -113,14 +100,4 @@ def train_test_model(X_train_w2v_vectorized, y_train, X_test_w2v_vectorized, y_t
     return accuracy
 
 if __name__ == "__main__":
-    raw_data = preprocess.clean_process(readdata.read())
-    model_vectors = load_vectors()
-
-
-    X_train, y_train, X_test, y_test, X_train_w2v_vectorized, X_test_w2v_vectorized = prepare_data(model_vectors, raw_data)
-
-    print('--- training/testing ---')
-    # print(train_test_model_kfold(X,Y, batch_size = 200))
-    print('Accuracy: ', train_test_model(X_train_w2v_vectorized, y_train, X_test_w2v_vectorized, y_test))
-
-    
+    pass

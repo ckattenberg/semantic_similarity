@@ -1,6 +1,5 @@
 from nltk.tokenize import word_tokenize, RegexpTokenizer
 import pandas as pd
-from readdata import read
 from math import floor
 from nltk.stem.snowball import SnowballStemmer
 import numpy as np
@@ -61,4 +60,4 @@ def split_train_test(data, partition_size = 0.7):
     return X_train, y_train, X_test, y_test
 
 if __name__ == "__main__":
-   print(clean_process(read()[:10]))
+    pass
