@@ -18,7 +18,7 @@ import numpy as np
 # 	return(training_corpus)
 
 def get_corpus(data):
-	training_corpus = list(training_data['question1']) + list(training_data['question2'])
+	training_corpus = list(data['question1']) + list(data['question2'])
 	return(training_corpus)
 
 # Turn corpus into TaggedDocument (as input for model training)
