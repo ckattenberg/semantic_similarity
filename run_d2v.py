@@ -15,7 +15,5 @@ if __name__ == "__main__":
 		data = readdata.read()
 		print("Cleaning data")
 		training_data = preprocess.clean_process(data)
-		training_corpus = d2v.get_corpus(training_data)
-		print("Training model")
-		d2v.create_model(training_corpus, "doc2vec.model")
+		d2v.create_model(training_data, "doc2vec.model")
 		
