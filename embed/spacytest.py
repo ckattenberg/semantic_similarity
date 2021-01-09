@@ -1,5 +1,3 @@
-from readdata import read
-from preprocess import process, clean_process
 from sklearn.metrics import accuracy_score, precision_score, recall_score
 import spacy
 

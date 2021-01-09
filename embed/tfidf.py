@@ -1,7 +1,5 @@
 import nltk, string
 from sklearn.feature_extraction.text import TfidfVectorizer
-from readdata import read
-import preprocess
 from collections import defaultdict
 from sklearn.metrics import accuracy_score, precision_score, recall_score
 from sklearn.metrics.pairwise import cosine_similarity

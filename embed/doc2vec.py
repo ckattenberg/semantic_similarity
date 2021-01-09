@@ -60,8 +60,8 @@ def create_model(filename):
 	model = doc2vec_model(tagged_training_corpus)
 	model.save(filename)
 
-def load_model(filename = "doc2vec.model"):
-    model = gensim.models.Doc2Vec.load("doc2vec.model")
+def load_model(filename = "models/doc2vec.model"):
+    model = gensim.models.Doc2Vec.load("filepath")
     return model
 
 
