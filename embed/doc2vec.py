@@ -17,6 +17,10 @@ import numpy as np
 # 	training_corpus = list(training_data['question1']) + list(training_data['question2'])
 # 	return(training_corpus)
 
+def get_corpus(data):
+	training_corpus = list(training_data['question1']) + list(training_data['question2'])
+	return(training_corpus)
+
 # Turn corpus into TaggedDocument (as input for model training)
 def read_corpus(corpus, tokens_only=False):
 	for i, line in enumerate(corpus):
