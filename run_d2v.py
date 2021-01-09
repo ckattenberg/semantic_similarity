@@ -4,7 +4,7 @@ from process import readdata
 from embed import doc2vec as d2v
 
 def read_data():
-    	print("Reading in the data.")
+	print("Reading in the data.")
 	data = readdata.read()
 	training_data = preprocess.clean_process(data)
 	# In gensim, a "corpus" is a list of documents.
@@ -12,7 +12,7 @@ def read_data():
 	return(training_corpus)
 
 if __name__ == "__main__":
-    
+	
 	# Read in the data
 	training_corpus = read_data()
 	tagged_training_corpus = list(d2v.read_corpus(training_corpus))
