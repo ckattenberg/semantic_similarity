@@ -12,7 +12,7 @@ if __name__ == "__main__":
     w2v_model.save("models/w2vmodel.mod")
     w2v_vectors = w2v_model.wv
 
-    # d2v_model = doc2vec.load_model("models/doc2vec.model")
+    d2v_model = doc2vec.load_model("models/doc2vec.model")
     print('d2v_model loaded')
    
     # Split raw_data into train/test set
@@ -24,18 +24,18 @@ if __name__ == "__main__":
     X_test_w2v_vectorized = bc.vectorize_data_w2v(X_test, w2v_vectors)
 
     ''' Vectorize d2v '''
-    # X_train_d2v_vectorized = bc.vectorize_data_d2v(X_train, d2v_model)
-    # X_test_d2v_vectorized = bc.vectorize_data_d2v(X_test, d2v_model)
+    X_train_d2v_vectorized = bc.vectorize_data_d2v(X_train, d2v_model)
+    X_test_d2v_vectorized = bc.vectorize_data_d2v(X_test, d2v_model)
 
     # Train model on training set
     print('--- training model ---')
-    model_w2v = bc.train_model(X_train_w2v_vectorized, y_train)
-    # model_d2v = bc.train_model(X_train_d2v_vectorized, y_train)
+    model_w2v = bc.train_model(X_train_w2v_vectorized, y_train, 10)
+    model_d2v = bc.train_model(X_train_d2v_vectorized, y_train, 10)
 
     # Test model on test set
     print('--- testing model ---')
     accuracy_w2v = bc.test_model(X_test_w2v_vectorized, y_test, model_w2v)
-    # accuracy_d2v = bc.test_model(X_test_d2v_vectorized, y_test, model_d2v)
+    accuracy_d2v = bc.test_model(X_test_d2v_vectorized, y_test, model_d2v)
 
     ''' Test Kfold '''
     # X = np.concatenate((X_train_d2v_vectorized, X_test_d2v_vectorized))
@@ -43,4 +43,4 @@ if __name__ == "__main__":
     # print(bc.train_test_model_kfold(X,Y, batch_size = 200))
 
     print('Accuracy w2v: ', accuracy_w2v)
-    # print('Accuracy d2v: ', accuracy_d2v)
+    print('Accuracy d2v: ', accuracy_d2v)
