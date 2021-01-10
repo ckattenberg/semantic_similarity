@@ -66,7 +66,6 @@ def create_model(data, filename):
 	model = doc2vec_model(tagged_training_corpus)
 	model.save(filename)
 
-
 # Main function
 if __name__ == "__main__":
 

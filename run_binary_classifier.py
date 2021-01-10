@@ -29,12 +29,21 @@ if __name__ == "__main__":
 
     # Train model on training set
     print('--- training model ---')
+<<<<<<< HEAD
     # model_w2v = bc.train_model(X_train_w2v_vectorized, y_train)
     model_d2v = bc.train_model(X_train_d2v_vectorized, y_train)
 
     # Test model on test set
     print('--- testing model ---')
     # accuracy_w2v = bc.test_model(X_test_w2v_vectorized, y_test, model_w2v)
+=======
+    model_w2v = bc.train_model(X_train_w2v_vectorized, y_train, 10)
+    model_d2v = bc.train_model(X_train_d2v_vectorized, y_train, 10)
+
+    # Test model on test set
+    print('--- testing model ---')
+    accuracy_w2v = bc.test_model(X_test_w2v_vectorized, y_test, model_w2v)
+>>>>>>> 0f3d5b0cabd404752540653c3e33a94fb2f90dc9
     accuracy_d2v = bc.test_model(X_test_d2v_vectorized, y_test, model_d2v)
 
     ''' Test Kfold '''
@@ -42,5 +51,9 @@ if __name__ == "__main__":
     # Y = np.append(y_train, y_test)
     # print(bc.train_test_model_kfold(X,Y, batch_size = 200))
 
+<<<<<<< HEAD
     # print('Accuracy w2v: ', accuracy_w2v)
+=======
+    print('Accuracy w2v: ', accuracy_w2v)
+>>>>>>> 0f3d5b0cabd404752540653c3e33a94fb2f90dc9
     print('Accuracy d2v: ', accuracy_d2v)
