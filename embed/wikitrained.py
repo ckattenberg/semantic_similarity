@@ -53,11 +53,11 @@ def load_vectors():
     ''''First checks for a more compatible format, otherwise tries to load
     the wikitrained model from a txt file.'''
     try:
-        return KeyedVectors.load("wiki.vectors")
+        return KeyedVectors.load("models/wiki.vectors")
     except:
         print("Loading from text file. Will take a while.")
         vectors = KeyedVectors.load_word2vec_format(fname="enwiki_20180420_100d.txt", binary=False)
-        vectors.save("wiki.vectors")
+        vectors.save("models/wiki.vectors")
         return vectors
     
 
