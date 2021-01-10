@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
     w2v_model = w2vec.get_model(raw_data, partition)
 
-    w2v_model.save("w2vmodel.mod")
+    w2v_model.save("models/w2vmodel.mod")
     w2v_vectors = w2v_model.wv
 
     # d2v_model = doc2vec.load_model("models/doc2vec.model")

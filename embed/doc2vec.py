@@ -80,9 +80,9 @@ if __name__ == "__main__":
 
 	# If a model already exists, we just need to load it.
 	try:
-		model = gensim.models.Doc2Vec.load("doc2vec.model")
+		model = gensim.models.Doc2Vec.load("models/doc2vec.model")
 		print("Found an existing model.")
 	except:
 		print("Could not find an existing model. Creating a new one. (Saved as doc2vec.model)")
 		model = doc2vec_model(tagged_training_corpus)
-		model.save("doc2vec.model")
+		model.save("models/doc2vec.model")
