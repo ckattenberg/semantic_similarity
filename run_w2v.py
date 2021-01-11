@@ -6,9 +6,10 @@ from math import floor
 
 if __name__ == "__main__":
     raw_data = preprocess.stem_data(preprocess.clean_process(readdata.read()))
-    model = w2vec.get_model(raw_data, 0.7)
+    partition = floor(len(raw_data.index)*0.7)
+    model = w2vec.get_model(raw_data, partition)
 
-    test = raw_data[floor(len(raw_data.index)*0.7):]
+    test = raw_data[partition:]
     model.save("models/w2vmodel.mod")
     
     result = w2vec.calc_similarity(test, model)
