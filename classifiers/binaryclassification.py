@@ -62,16 +62,6 @@ def vectorize_data_w2v(data, vectors):
     # vector_list = scaler.fit_transform(vector_list)
     return np.array(vector_list)
 
-def vectorize_data_d2v(data, model):
-    vector_list = []
-    with Bar('d2v_vectorizing', max=len(data)) as bar:
-        for index, row in data.iterrows():
-            text1 = row['question1']
-            text2 = row['question2']
-            vector_list.append(doc2vec.doc2vec(model, text1, text2))
-            bar.next()
-    return np.array(vector_list)
-
 # Takes X and Y as input, where X = list of list with combined vectors of q1 and q2, and Y = list of is_duplicate values.
 # Split dataset into 90% train 10% test, trains data on train data, test on test data,
 # Repeat 10 times (kfold), calculate accuracy for each fold, return average accuracy of all folds.

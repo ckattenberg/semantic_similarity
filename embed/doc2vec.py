@@ -3,10 +3,10 @@ The code in this document can be used to create a Doc2Vec model with the gensim 
 Use the function load_model(filepath) to load in a model and
 doc2vec(model, sent) to get the vector embedding of a sentence sent.
 """
-import os
 import gensim
 from scipy.spatial import distance
 import numpy as np
+from progress.bar import Bar
 
 # Read in the data and preprocess it.
 # def read_data():
@@ -43,6 +43,16 @@ def doc2vec_model(train_data):
 		epochs=model.epochs)
 
 	return(model)
+
+def vectorize_data_d2v(data, model):
+    vector_list = []
+    with Bar('d2v_vectorizing', max=len(data)) as bar:
+        for index, row in data.iterrows():
+            text1 = row['question1']
+            text2 = row['question2']
+            vector_list.append(doc2vec.doc2vec(model, text1, text2))
+            bar.next()
+    return np.array(vector_list)
 
 # Load a model from filepath
 def load_model(filepath):
