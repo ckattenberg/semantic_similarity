@@ -12,7 +12,7 @@ from scipy import spatial
 import numpy as np
 from math import floor
 from sklearn.metrics import accuracy_score
-from . import doc2vec
+
 from progress.bar import Bar
 from sklearn import naive_bayes
 from sklearn.svm import SVC

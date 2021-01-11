@@ -50,7 +50,7 @@ def vectorize_data_d2v(data, model):
         for index, row in data.iterrows():
             text1 = row['question1']
             text2 = row['question2']
-            vector_list.append(doc2vec.doc2vec(model, text1, text2))
+            vector_list.append(doc2vec(model, text1, text2))
             bar.next()
     return np.array(vector_list)
 
