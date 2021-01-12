@@ -59,5 +59,14 @@ def split_train_test(data, partition_size = 0.7):
 
     return X_train, y_train, X_test, y_test
 
+def split_train_test_vect(X, Y, partition_size = 0.7):
+    partition = floor(len(Y)*partition_size)
+    X_train = X[:partition]
+    X_test = X[partition:]
+    y_train = Y[:partition]
+    y_test = Y[partition:]
+    return X_train, X_test, y_train, y_test
+
+
 if __name__ == "__main__":
     pass
