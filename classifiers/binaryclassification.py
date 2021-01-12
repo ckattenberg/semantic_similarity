@@ -12,7 +12,7 @@ from scipy import spatial
 import numpy as np
 from math import floor
 from sklearn.metrics import accuracy_score
-
+import pickle
 from progress.bar import Bar
 from sklearn import naive_bayes
 from sklearn.svm import SVC
@@ -25,12 +25,12 @@ from sklearn import datasets, linear_model
 # baseline model
 def create_baseline():
 	# create model
-	model = Sequential()
-	model.add(Dense(200, input_dim=200, activation='relu'))
-	model.add(Dense(1, activation='sigmoid'))
-	# Compile model
-	model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
-	return model
+    model = Sequential()
+    model.add(Dense(200, input_dim=200, activation='relu'))
+    model.add(Dense(1, activation='sigmoid'))
+    # Compile model
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return model
 
 vector_size = 100
 
@@ -48,17 +48,33 @@ def vectorize_w2v(vectors, s1, s2):
     res = np.concatenate((avg1,avg2))
     return res
 
-# Returns a list of combined vectors of q1 and q2
-def vectorize_data_w2v(data, vectors):
+def create_w2v_pickle(data, vectors):
     vector_list = []
-    
-    with Bar('w2v_vectorizing', max=len(data)) as bar:
+    with Bar('creating_pickle', max=len(data)) as bar:
         for index, row in data.iterrows():
             text1 = row['question1']
             text2 = row['question2']
             vector_list.append(vectorize_w2v(vectors, text1, text2))
             bar.next()
-    # scaler = StandardScaler()
+
+    with open('data/w2v_vectors.p', 'wb') as f:
+        pickle.dump(vector_list, f)
+
+# Returns a list of combined vectors of q1 and q2
+def vectorize_data_w2v(data, vectors):
+    vector_list = []
+    try:
+        with open('data/w2v_vectors.p', 'rb') as f:
+            vector_list = pickle.load(f)
+            print('Found pickle')
+    except:
+        with Bar('w2v_vectorizing', max=len(data)) as bar:
+            for index, row in data.iterrows():
+                text1 = row['question1']
+                text2 = row['question2']
+                vector_list.append(vectorize_w2v(vectors, text1, text2))
+                bar.next()
+    # scaler = MinMaxScaler()
     # vector_list = scaler.fit_transform(vector_list)
     return np.array(vector_list)
 

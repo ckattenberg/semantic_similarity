@@ -7,6 +7,8 @@ import gensim
 from scipy.spatial import distance
 import numpy as np
 from progress.bar import Bar
+from math import floor
+import pickle
 
 # Read in the data and preprocess it.
 # def read_data():
@@ -46,13 +48,30 @@ def doc2vec_model(train_data):
 
 def vectorize_data_d2v(data, model):
     vector_list = []
-    with Bar('d2v_vectorizing', max=len(data)) as bar:
+    try:
+        with open('data/d2v_vectors.p', 'rb') as f:
+            vector_list = pickle.load(f)
+            print('Found pickle')
+    except:
+        with Bar('d2v_vectorizing', max=len(data)) as bar:
+            for index, row in data.iterrows():
+                text1 = row['question1']
+                text2 = row['question2']
+                vector_list.append(doc2vec(model, text1, text2))
+                bar.next()
+    return np.array(vector_list)
+
+def create_d2v_pickle(data, vectors):
+    vector_list = []
+    with Bar('creating_pickle', max=len(data)) as bar:
         for index, row in data.iterrows():
             text1 = row['question1']
             text2 = row['question2']
-            vector_list.append(doc2vec(model, text1, text2))
+            vector_list.append(doc2vec(vectors, text1, text2))
             bar.next()
-    return np.array(vector_list)
+
+    with open('data/d2v_vectors.p', 'wb') as f:
+        pickle.dump(vector_list, f)
 
 # Load a model from filepath
 def load_model(filepath):
