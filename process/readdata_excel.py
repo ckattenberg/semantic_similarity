@@ -1,7 +1,6 @@
 import pandas as pd
 from tabulate import tabulate
 import numpy as np
-import re
 
 # Returns a dictionary of dataframes. One for each sheet.
 def read_excel(path="data/gebiedsmakelaars.xlsx"):
@@ -26,8 +25,6 @@ def read_excel(path="data/gebiedsmakelaars.xlsx"):
 # Returns a list of all relevant sentences in the dataset where every sentence is a string.
 # Hope you like spaghetti.
 def get_sentences(df_dict):
-    url_regex =  re.compile(r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
-
     exceptions = ["In hoeverre herken je deze quote (niet) als het gaat om je eigen ervaringen?", 
                     "Wat is er aan de hand?",
                     "Wat is er nodig?"]
