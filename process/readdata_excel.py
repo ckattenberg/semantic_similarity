@@ -23,6 +23,8 @@ def read_excel(path="data/gebiedsmakelaars.xlsx"):
     # dict_keys(['Overzicht', 't q1', 'T1 q2', 'T1 q3', 't2 q1', 't2 q2', 't2 q3', 't3 q1', 't3 q2', 't3 q3', 'Corona'])
     return(excel_dfs)
 
+# Returns a list of all relevant sentences in the dataset where every sentence is a string.
+# Hope you like spaghetti.
 def get_sentences(df_dict):
     url_regex =  re.compile(r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
 
