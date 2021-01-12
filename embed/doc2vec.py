@@ -50,7 +50,7 @@ def vectorize_data_d2v(data, model):
     vector_list = []
     try:
         with open('data/d2v_vectors.p', 'rb') as f:
-            vector_list = pickle.load(f)
+            vector_list = pickle.load(f)[:len(data.index)]
             print('Found pickle')
     except:
         with Bar('d2v_vectorizing', max=len(data)) as bar:

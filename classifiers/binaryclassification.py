@@ -17,6 +17,7 @@ from progress.bar import Bar
 from sklearn import naive_bayes
 from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier
+from collections import defaultdict
 
 
 
@@ -27,6 +28,44 @@ def create_baseline():
 	# create model
     model = Sequential()
     model.add(Dense(200, input_dim=200, activation='relu'))
+    model.add(Dense(1, activation='sigmoid'))
+    # Compile model
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return model
+
+def single_layer_200():
+	# create model
+    model = Sequential()
+    model.add(Dense(200, input_dim=200, activation='relu'))
+    model.add(Dense(1, activation='sigmoid'))
+    # Compile model
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return model
+
+def double_layer_200():
+	# create model
+    model = Sequential()
+    model.add(Dense(200, input_dim=200, activation='relu'))
+    model.add(Dense(100, activation='relu'))
+    model.add(Dense(1, activation='sigmoid'))
+    # Compile model
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return model
+
+def single_layer_1024():
+	# create model
+    model = Sequential()
+    model.add(Dense(1024, input_dim=1024, activation='relu'))
+    model.add(Dense(1, activation='sigmoid'))
+    # Compile model
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return model
+
+def double_layer_1024():
+	# create model
+    model = Sequential()
+    model.add(Dense(1024, input_dim=1024, activation='relu'))
+    model.add(Dense(512, activation='relu'))
     model.add(Dense(1, activation='sigmoid'))
     # Compile model
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -65,7 +104,7 @@ def vectorize_data_w2v(data, vectors):
     vector_list = []
     try:
         with open('data/w2v_vectors.p', 'rb') as f:
-            vector_list = pickle.load(f)
+            vector_list = pickle.load(f)[:len(data.index)]
             print('Found pickle')
     except:
         with Bar('w2v_vectorizing', max=len(data)) as bar:
@@ -94,9 +133,30 @@ def train_model(X_train, y_train, batch_size = 200):
     estimator.fit(X_train, y_train)
     return estimator
 
+def split_train_test_vect(X, Y, partition_size = 0.7):
+    partition = floor(len(Y)*partition_size)
+    X_train = X[:partition]
+    X_test = X[partition:]
+    y_train = Y[:partition]
+    y_test = Y[partition:]
+    return X_train, X_test, y_train, y_test
+
+    
+
 def test_model(X_test, y_test, model):
     y_pred = model.predict(X_test)
     return accuracy_score(y_test, y_pred)
+
+def train_test_models(X_vectorized, Y, method, models = ['create_baseline'], batch_size = 200):
+    accuracies = defaultdict(dict)
+
+    X_train, X_test, y_train, y_test = split_train_test_vect(X_vectorized, Y)
+    for model in models:
+        estimator = KerasClassifier(build_fn=eval(model), epochs=100, batch_size=batch_size, verbose=1)
+        estimator.fit(X_train, y_train)
+        accuracies[method][model] = test_model(X_test, y_test, estimator)
+
+    return accuracies
 
 if __name__ == "__main__":
     pass
