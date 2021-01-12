@@ -4,7 +4,7 @@ import numpy as np
 from math import floor
 
 # Magic number; gensim's word2vec seems to use vectors of size 100
-vector_size = 100
+vectorsize = 256
 
 def make_space(data, partition=None):
     '''Combines the two lists of questions to make a single list, the result is a list of list of tokens.
@@ -15,7 +15,7 @@ def make_space(data, partition=None):
     vocab = list(data.question1.values) + list(data.question2.values)
     sentences = list(traindata.question1.values) + list(traindata.question2.values)
 
-    model = word2vec.Word2Vec(window=5, min_count=1, sample=0.1, ns_exponent=1)
+    model = word2vec.Word2Vec(window=2, min_count=1, sample=0.001, ns_exponent=1, sg=1, size=vectorsize)
     model.build_vocab(vocab)
     model.train(sentences, total_examples=len(sentences), epochs=model.epochs)
 
@@ -25,15 +25,15 @@ def string_similarity(model, s1, s2):
     '''Calculates the similarity of a "sentence", a list of words, by summing
     the word-vectors of those words and taking the average.'''
     vectors = model.wv
-    sen_vector1 = [0] * vector_size
+    sen_vector1 = [0] * vectorsize
     for word in s1:
-        fac = 50/vectors.vocab[word].count
+        fac = 1
         sen_vector1 += fac * vectors[word]
     avg1 = np.array(sen_vector1)/len(s1)
 
-    sen_vector2 = [0] * vector_size
+    sen_vector2 = [0] * vectorsize
     for word in s2:
-        fac = 50/vectors.vocab[word].count
+        fac = 1
         sen_vector2 += fac * vectors[word]
     avg2 = np.array(sen_vector2)/len(s2)
 
@@ -49,6 +49,7 @@ def get_model(raw_data, partition):
         w2v_model = word2vec.Word2Vec.load("models/w2vmodel.mod")
         print('w2v_model loaded')
     except:
+        print('--- no existing model ---')
         print('--- embedding ---')
         w2v_model = make_space(raw_data, partition)
 

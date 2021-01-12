@@ -5,7 +5,7 @@ from gensim.models import word2vec
 from math import floor
 
 if __name__ == "__main__":
-    raw_data = preprocess.stem_data(preprocess.clean_process(readdata.read()))
+    raw_data = preprocess.stem_data(preprocess.clean_process(preprocess.clear_stopwords(readdata.read())))
     partition = floor(len(raw_data.index)*0.7)
     model = w2vec.get_model(raw_data, partition)
 

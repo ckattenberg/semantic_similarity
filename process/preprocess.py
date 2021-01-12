@@ -3,6 +3,7 @@ import pandas as pd
 from math import floor
 from nltk.stem.snowball import SnowballStemmer
 import numpy as np
+from gensim.parsing.preprocessing import remove_stopwords
 
 def process(data):
     '''Applies standard nltk word tokenizer to the questions, replacing the original
@@ -29,6 +30,14 @@ def clean_split(data):
     test = pd.DataFrame(clean[partition:])
 
     return train, test
+
+# def sentence_remove_stopwords(sentence):
+#     return [w for w in sentence if not w in stopwords.words('english')]
+
+def clear_stopwords(data):
+    data.question1 = data.question1.apply(remove_stopwords)
+    data.question2 = data.question2.apply(remove_stopwords)
+    return data
 
 def untokenized_split(data):
     partition = floor(len(data.index)*0.7)
