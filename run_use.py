@@ -8,6 +8,7 @@ from keras.layers import Dense
 from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.metrics import accuracy_score
 import tensorflow as tf
+import pickle
 
 def embed_data(data):
     q1 = data["question1"]
@@ -16,6 +17,19 @@ def embed_data(data):
     em2 = q2.apply(use.encode)
     em_df = pd.DataFrame({"em1": em1, "em2": em2})
     return em_df
+
+def vectorize_data(data):
+    try:
+        with open('data/use_vectors.p', 'rb') as f:
+            vector_list = pickle.load(f)[:len(data.index)]
+            print('Found pickle')
+    except:
+        print('--- vectorizing ---')
+        X_vec = embed_data(data)
+        print('--- concatting ---')
+        vector_list = concat_col(X_vec)
+    return vector_list
+    
 
 def sim_data(em_df):
     similarities = em_df.apply(lambda row:use.cossim(row.em1, row.em2), axis=1)
@@ -56,8 +70,20 @@ def train_model(X_train, y_train, batch_size = 200):
     estimator.fit(X_train, y_train)
     return estimator
 
+def create_use_pickle(data):
+    X = data[['question1','question2']]
+    Y = data['is_duplicate']
+    print('vectorizing')
+    X_vectorized = embed_data(X)
+    print('concatting')
+    X_concat = concat_col(X_vectorized)
+    vector_list = np.array(list(X_concat))
+
+    with open('data/use_vectors.p', 'wb') as f:
+        pickle.dump(vector_list, f)
+
 if __name__ == "__main__":
-    data = readdata.read()
+    data = readdata.read()[:5000]
 
     # Split raw_data into train/test set
     X_train, y_train, X_test, y_test = preprocess.split_train_test(data)

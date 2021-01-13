@@ -15,18 +15,17 @@ def join_results(list_results):
             i+=1
         else:
             df = df.join(pd.DataFrame(data=r), how = 'outer', sort=False)
-    # Hardcoded
+    # Reorganize
     df = df.reindex(['single_layer_200','double_layer_200','single_layer_1024','double_layer_1024'])
     return df
 
-def save_results(results):
-    results.to_csv('results/results.csv')
+
 
 
 
 if __name__ == "__main__":
     print('--- reading data ---')
-    data = preprocess.clean_process(readdata.read()[:5000])
+    data = preprocess.clean_process(readdata.read())
 
     partition = floor(len(data.index)*1)
     w2v_model = w2vec.get_model(data, partition)
@@ -38,6 +37,7 @@ if __name__ == "__main__":
     ''' Run once to create pickle to speed up vectorizing in future. (600 MB) '''
     # bc.create_w2v_pickle(data, w2v_vectors)
     # doc2vec.create_d2v_pickle(data, d2v_model)
+    
 
     X = data[['question1','question2']]
     Y = data['is_duplicate']
@@ -47,22 +47,24 @@ if __name__ == "__main__":
 
     ''' w2v '''
     X_w2v_vectorized = bc.vectorize_data_w2v(X, w2v_vectors)
-    results_w2v = bc.train_test_models(X_w2v_vectorized,Y,'w2v',models, 25)
+    results_w2v = bc.train_test_models(X_w2v_vectorized,Y,'w2v',models, 200)
 
     ''' d2v '''
     X_d2v_vectorized = doc2vec.vectorize_data_d2v(X, d2v_model)
-    results_d2v = bc.train_test_models(X_d2v_vectorized,Y,'d2v',models, 25)
+    results_d2v = bc.train_test_models(X_d2v_vectorized,Y,'d2v',models, 200)
 
     ''' use '''
     # USE uses raw data instead of clean_process data
-    data = readdata.read()[:5000]
+    data = readdata.read()
+    # run_use.create_use_pickle(data)
+
     X = data[['question1','question2']]
     Y = data['is_duplicate']
     models = ['single_layer_1024','double_layer_1024']
 
-    X_use_vectorized = run_use.embed_data(X)
-    X_concat = run_use.concat_col(X_use_vectorized)
-    results_use = bc.train_test_models(X_concat,Y,'use',models, 25)
+    X_use_vectorized = run_use.vectorize_data(X)
+    results_use = bc.train_test_models(X_use_vectorized,Y,'use',models, 25)
+  
 
     # Append results to list so they can be joined into one DataFrame
     list_results = []
@@ -72,5 +74,5 @@ if __name__ == "__main__":
     
     results = join_results(list_results)
     print(results)
-    save_results(results)
+    results.to_csv('results/results.csv')
     
