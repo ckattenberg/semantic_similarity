@@ -23,6 +23,12 @@ def read_excel(path="data/gebiedsmakelaars.xlsx"):
     return(excel_dfs)
 
 def splitter(key, excel):
+    '''Function takes a key, which is a document name, and the whole excel data sheet.
+    
+    Returns uniques and dups. Both are multi-dimensional lists. Uniques is a 2-dimensional
+    list, each list inside of it contains the statements related to a certain question.
+    Dups is 3 dimensional, it contains a list for each question, which contains lists containing
+    statements that are the same. '''
     uniques = []
     dups = []
     sheet = excel[key]
