@@ -1,4 +1,5 @@
 import pandas as pd
+from pandas.io import excel
 from tabulate import tabulate
 import numpy as np
 
@@ -22,7 +23,7 @@ def read_excel(path="data/gebiedsmakelaars.xlsx"):
     # dict_keys(['Overzicht', 't q1', 'T1 q2', 'T1 q3', 't2 q1', 't2 q2', 't2 q3', 't3 q1', 't3 q2', 't3 q3', 'Corona'])
     return(excel_dfs)
 
-def splitter(key, excel):
+def splitter(key, excel, extend=False):
     '''Function takes a key, which is a document name, and the whole excel data sheet.
     
     Returns uniques and dups. Both are multi-dimensional lists. Uniques is a 2-dimensional
@@ -37,8 +38,13 @@ def splitter(key, excel):
     for i in range(2, len(sheet)):
         try:
             if sheet[0][i] == "Stapeltje?":
-                uniques.append(aspect_uniques)
-                dups.append(aspect_dups)
+                if extend:
+                    uniques.extend(aspect_uniques)
+                    dups.extend(aspect_dups)
+                else:
+                    uniques.append(aspect_uniques)
+                    dups.append(aspect_dups)
+
                 aspect_uniques = []
                 aspect_dups = []
                 continue
@@ -53,15 +59,62 @@ def splitter(key, excel):
         except:
             continue
     return uniques, dups
+
+def get_everything(keys, excel_dfs):
+    all_uniques = []
+    all_dups = []
+    for i in range(1, len(keys)):
+        uniques, dups = splitter(keys[i], excel_dfs, True)
+        all_uniques.extend(uniques)
+        all_dups.extend(dups)
+    return all_uniques, all_dups
+
+def make_uniques(uniques):
+    q1 = pd.Series()
+    q2 = pd.Series()
+    dupe = pd.Series()
+    copy = uniques
+    for i in range(len(uniques) - 1):
+        copy = shift(copy)
+        q1 = q1.append(pd.Series(uniques), ignore_index=True)
+        q2 = q2.append(pd.Series(copy), ignore_index=True)
+        dupe = dupe.append(pd.Series([0] * len(uniques)), ignore_index = True)
+    data = pd.DataFrame({'question1': q1, 'question2':q2, 'is_duplicate':dupe})
+    return data
+
+def make_duplicates(all_dupes):
+    q1 = pd.Series()
+    q2 = pd.Series()
+    dupe = pd.Series()
+    for dupes in all_dupes:
+        copy = dupes
+        for i in range(len(dupes) - 1):
+            copy = shift(copy)
+            q1 = q1.append(pd.Series(dupes), ignore_index=True)
+            q2 = q2.append(pd.Series(copy), ignore_index=True)
+            print(dupes, copy)
+            dupe = dupe.append(pd.Series([1] * len(dupes)), ignore_index = True)
+    data = pd.DataFrame({'question1': q1, 'question2':q2, 'is_duplicate':dupe})
+    return data
+
+
+def shift(all_uniques):
+    shifted = all_uniques[1:].copy()
+    shifted.append(all_uniques[0])
+    return shifted
     
 def main():
     excel_dfs = read_excel()
     keys = []
     for x in excel_dfs.keys():
         keys.append(x)
-    uniques, dups = splitter(keys[1], excel_dfs)
-    for x in uniques:
-        print(x)
+
+    all_uniques, all_dups = get_everything(keys, excel_dfs)
+    data = make_uniques(all_uniques)
+    data = data.append(make_duplicates(all_dups), ignore_index=True)
+    return data
+
+    
 
 if __name__ == '__main__':
     main()
