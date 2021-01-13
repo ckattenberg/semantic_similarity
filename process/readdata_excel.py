@@ -41,7 +41,7 @@ def get_sentences(df_dict):
                 column = df[column_name]
 
                 # For each row in the column, append the sentence to sencences, unless in exceptions.
-                for index, value in column.iteritems():
+                for _, value in column.iteritems():
                     # Skip NaN values
                     if(value != np.nan and not (pd.isnull(value))):
                         # Skip exeption sentences
