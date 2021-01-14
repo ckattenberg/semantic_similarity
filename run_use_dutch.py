@@ -10,7 +10,6 @@ from sklearn.metrics import accuracy_score
 import tensorflow as tf
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-import tensorflow_text
 
 def embed_data(data):
     q1 = data["question1"]
@@ -60,7 +59,7 @@ def train_model(X_train, y_train, batch_size = 200):
     return estimator
 
 if __name__ == "__main__":
-    data = read_excel.main()
+    data = read_excel.main().sample(frac=1)
 
     # Split raw_data into train/test set
     X_train, y_train, X_test, y_test = preprocess.split_train_test(data)

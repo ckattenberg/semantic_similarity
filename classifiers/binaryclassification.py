@@ -17,6 +17,8 @@ from progress.bar import Bar
 from sklearn import naive_bayes
 from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 
