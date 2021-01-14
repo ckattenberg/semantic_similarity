@@ -18,6 +18,8 @@ from sklearn import naive_bayes
 from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier
 from collections import defaultdict
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 
