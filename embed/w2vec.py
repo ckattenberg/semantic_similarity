@@ -6,7 +6,7 @@ from math import floor
 # Magic number; gensim's word2vec seems to use vectors of size 100
 vectorsize = 100
 
-def make_space(data, partition=None, window=2, sample=0.001, ns_exponent=1, sg=1, alpha=0.025, negative=0):
+def make_space(data, partition=None, window=2, sample=0.0001, ns_exponent=1, sg=1, alpha=0.09, negative=10):
     '''Combines the two lists of questions to make a single list, the result is a list of list of tokens.
     This is what the model needs for its vocab training.'''
     if partition == None:
