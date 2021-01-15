@@ -26,6 +26,20 @@ $ python run_test_w2v.py
 ```
 Results of a test run are automatically saved in the results/ folder.
 
+## Dependencies
+
+Packages required to use this library:
+- scipy
+- numpy
+- gensim
+- pickle
+- sklearn
+- pandas
+- nltk
+- tensorflow_hub (?)
+- keras
+
+
 
 
 
