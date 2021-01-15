@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
 		# Create a /models folder if it does not exist yet.
 		if not os.path.exists('models'):
-    		os.makedirs('models')
+			os.makedirs('models')
 
 		d2v.create_model(training_data, "models/doc2vec.model")
 		
