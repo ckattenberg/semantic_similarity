@@ -27,8 +27,8 @@ $ python run_test_w2v.py
 Results of a test run are automatically saved in the results/ folder.
 
 ## Dependencies 
+Use ```pip install -r example-requirements.txt ```
 
-Packages required to use this library:
 - gensim 3.8.3
 - keras 2.4.3
 - nltk 3.5
