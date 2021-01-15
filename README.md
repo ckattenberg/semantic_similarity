@@ -1,6 +1,6 @@
 # Semantic and Intentional Textual Similarity
 
-This is a Python library for dealing with semantic similarity tasks. It was developed by students from the University of Amsterdam (UvA) for Open Online Research (https://openonlineresearch.com/) as part of the "Leren en Beslissen" course.
+This is a Python library for dealing with semantic similarity tasks. It is being developed by students from the University of Amsterdam (UvA) for Open Online Research (https://openonlineresearch.com/) as part of the "Leren en Beslissen" course.
 
 ## Usage
 
@@ -16,8 +16,18 @@ Where METHOD is the name of the embedding technique you want to use.
 
 To test the model after it has been trained:
 ```bash
-$ python run_METHOD.py
+$ python run_test_METHOD.py
 ```
+
+#### Specific Example
+```bash
+$ python run_w2v.py
+$ python run_test_w2v.py
+```
+Results of a test run are automatically saved in the results/ folder.
+
+
+
 
 ## Authors
 
