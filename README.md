@@ -4,7 +4,7 @@ This is a Python library for dealing with semantic similarity tasks. It is being
 
 ## Usage
 
-To train a model on the data:
+To train an embedding model on the data:
 ```bash
 $ python run_METHOD.py
 ```
@@ -14,7 +14,7 @@ Where METHOD is the name of the embedding technique you want to use.
 - Doc2Vec: d2v  
 - Universal Sentence Encoder: use
 
-To test the model after it has been trained:
+To train a neural net classifier and test it:
 ```bash
 $ python run_test_METHOD.py
 ```
