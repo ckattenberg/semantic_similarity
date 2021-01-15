@@ -19,10 +19,6 @@ def join_results(list_results):
     df = df.reindex(['single_layer_200','double_layer_200','single_layer_1024','double_layer_1024'])
     return df
 
-
-
-
-
 if __name__ == "__main__":
     print('--- reading data ---')
     data = preprocess.clean_process(readdata.read())
@@ -43,16 +39,16 @@ if __name__ == "__main__":
     Y = data['is_duplicate']
 
     ''' All models are located in classifiers/binaryclassification.py '''
-    models = ['single_layer_200','double_layer_200']
+    models = ['double_layer_200_200','triple_layer_200_200_200']
 
     ''' w2v '''
     X_w2v_vectorized = bc.vectorize_data_w2v(X, w2v_vectors)
     results_w2v = bc.train_test_models(X_w2v_vectorized,Y,'w2v',models, 200)
-
+    del X_w2v_vectorized
     ''' d2v '''
     X_d2v_vectorized = doc2vec.vectorize_data_d2v(X, d2v_model)
     results_d2v = bc.train_test_models(X_d2v_vectorized,Y,'d2v',models, 200)
-
+    del X_d2v_vectorized
     ''' use '''
     # USE uses raw data instead of clean_process data
     data = readdata.read()
@@ -60,11 +56,11 @@ if __name__ == "__main__":
 
     X = data[['question1','question2']]
     Y = data['is_duplicate']
-    models = ['single_layer_1024','double_layer_1024']
+    models = ['double_layer_1024_1024','triple_layer_1024']
 
     X_use_vectorized = run_use.vectorize_data(X)
     results_use = bc.train_test_models(X_use_vectorized,Y,'use',models, 25)
-  
+    del X_use_vectorized
 
     # Append results to list so they can be joined into one DataFrame
     list_results = []
