@@ -200,6 +200,10 @@ def train_test_models(X_vectorized, Y, method, models = ['create_baseline'], bat
         estimator.fit(X_train, y_train)
         accuracies[method][model] = test_model(X_test, y_test, estimator)
         print('Accuracy: ', accuracies[method][model])
+	
+    # Create a /models folder if it does not exist yet.
+    if not os.path.exists('results'):
+        os.makedirs('results')
 
     pd.DataFrame(data=accuracies).to_csv('results/results_'+method+'.csv')
     return accuracies
