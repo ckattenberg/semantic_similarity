@@ -26,22 +26,19 @@ $ python run_test_w2v.py
 ```
 Results of a test run are automatically saved in the results/ folder.
 
-## Dependencies
+## Dependencies 
+(Versions?)
 
 Packages required to use this library:
-- scipy
-- numpy
-- gensim
-- pickle
-- sklearn
-- pandas
-- nltk
-- tensorflow_hub (?)
-- keras
-
-
-
-
+- gensim 3.8.3
+- keras 2.4.3
+- nltk 3.5
+- numpy 1.19.4
+- pandas 1.2.0
+- scipy 1.6.0
+- sklearn 0.23.2
+- tensorflow 2.4.0
+- tensorflow_hub
 
 ## Authors
 
