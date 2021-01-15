@@ -160,8 +160,8 @@ def train_test_models(X_vectorized, Y, method, models = ['create_baseline'], bat
         print('Accuracy: ', accuracies[method][model])
 	
     # Create a /models folder if it does not exist yet.
-    if not os.path.exists('models'):
-        os.makedirs('models')
+    if not os.path.exists('results'):
+        os.makedirs('results')
 
     pd.DataFrame(data=accuracies).to_csv('results/results_'+method+'.csv')
     return accuracies
