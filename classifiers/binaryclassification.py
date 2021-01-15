@@ -54,6 +54,27 @@ def double_layer_200():
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
     return model
 
+def double_layer_200_200():
+	# create model
+    model = Sequential()
+    model.add(Dense(200, input_dim=200, activation='relu'))
+    model.add(Dense(200, input_dim=200, activation='relu'))
+    model.add(Dense(1, activation='sigmoid'))
+    # Compile model
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return model
+
+def triple_layer_200_200_200():
+	# create model
+    model = Sequential()
+    model.add(Dense(200, input_dim=200, activation='relu'))
+    model.add(Dense(200, activation='relu'))
+    model.add(Dense(200, activation='relu'))
+    model.add(Dense(1, activation='sigmoid'))
+    # Compile model
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return model
+
 def single_layer_1024():
 	# create model
     model = Sequential()
@@ -68,6 +89,27 @@ def double_layer_1024():
     model = Sequential()
     model.add(Dense(1024, input_dim=1024, activation='relu'))
     model.add(Dense(512, activation='relu'))
+    model.add(Dense(1, activation='sigmoid'))
+    # Compile model
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return model
+
+def double_layer_1024_1024():
+	# create model
+    model = Sequential()
+    model.add(Dense(1024, input_dim=1024, activation='relu'))
+    model.add(Dense(1024, activation='relu'))
+    model.add(Dense(1, activation='sigmoid'))
+    # Compile model
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return model
+
+def triple_layer_1024():
+	# create model
+    model = Sequential()
+    model.add(Dense(1024, input_dim=1024, activation='relu'))
+    model.add(Dense(512, activation='relu'))
+    model.add(Dense(256, activation='relu'))
     model.add(Dense(1, activation='sigmoid'))
     # Compile model
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -164,6 +206,10 @@ def train_test_models(X_vectorized, Y, method, models = ['create_baseline'], bat
         estimator.fit(X_train, y_train)
         accuracies[method][model] = test_model(X_test, y_test, estimator)
         print('Accuracy: ', accuracies[method][model])
+	
+    # Create a /models folder if it does not exist yet.
+    if not os.path.exists('results'):
+        os.makedirs('results')
 
     pd.DataFrame(data=accuracies).to_csv('results/results_'+method+'.csv')
     return accuracies
