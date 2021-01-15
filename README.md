@@ -27,7 +27,6 @@ $ python run_test_w2v.py
 Results of a test run are automatically saved in the results/ folder.
 
 ## Dependencies 
-(Versions?)
 
 Packages required to use this library:
 - gensim 3.8.3
