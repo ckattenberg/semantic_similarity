@@ -79,12 +79,18 @@ vector_size = 100
 def vectorize_w2v(vectors, s1, s2):
     sen_vector1 = [0] * vector_size
     for word in s1:
-        sen_vector1 += vectors[word]
+        try:
+            sen_vector1 += vectors[word]
+        except:
+            continue
     avg1 = np.array(sen_vector1)/len(s1)
 
     sen_vector2 = [0] * vector_size
     for word in s2:
-        sen_vector2 += vectors[word]
+        try:
+            sen_vector2 += vectors[word]
+        except:
+            continue
     avg2 = np.array(sen_vector2)/len(s2)
     res = np.concatenate((avg1,avg2))
     return res
