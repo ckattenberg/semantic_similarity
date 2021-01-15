@@ -2,7 +2,6 @@ from process import preprocess, readdata
 from embed import doc2vec
 from classifiers import binaryclassification as bc
 import pandas as pd
-import run_use
 
 if __name__ == "__main__":
     print('--- reading data ---')
