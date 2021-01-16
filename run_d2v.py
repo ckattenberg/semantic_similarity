@@ -9,9 +9,9 @@ if __name__ == "__main__":
 	# If a model already exists, we just need to load it.
 	try:
 		model = d2v.load_model()
-		print("Found an existing model.")
+		print("A d2v embedding model already exists.")
 	except:
-		print("Could not find an existing model. Creating a new one. (Saved as doc2vec.model)")
+		print("Could not find an existing model. Creating one. \n (Will be saved in models/doc2vec.model)")
 		print("Reading in data")
 		data = readdata.read()
 		print("Cleaning data")
