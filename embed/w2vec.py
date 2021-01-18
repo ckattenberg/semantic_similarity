@@ -4,9 +4,9 @@ import numpy as np
 from math import floor
 
 # Magic number; gensim's word2vec seems to use vectors of size 100
-vectorsize = 256
+vectorsize = 100
 
-def make_space(data, partition=None):
+def make_space(data, partition=None, window=2, sample=0.0001, ns_exponent=1, sg=1, alpha=0.09, negative=10):
     '''Combines the two lists of questions to make a single list, the result is a list of list of tokens.
     This is what the model needs for its vocab training.'''
     if partition == None:
@@ -15,7 +15,7 @@ def make_space(data, partition=None):
     vocab = list(data.question1.values) + list(data.question2.values)
     sentences = list(traindata.question1.values) + list(traindata.question2.values)
 
-    model = word2vec.Word2Vec(window=2, min_count=1, sample=0.001, ns_exponent=1, sg=1, size=vectorsize)
+    model = word2vec.Word2Vec(window=window, sample=sample, ns_exponent=ns_exponent, sg=sg, alpha=alpha, size=vectorsize, negative=negative)
     model.build_vocab(vocab)
     model.train(sentences, total_examples=len(sentences), epochs=model.epochs)
 
@@ -27,14 +27,18 @@ def string_similarity(model, s1, s2):
     vectors = model.wv
     sen_vector1 = [0] * vectorsize
     for word in s1:
-        fac = 1
-        sen_vector1 += fac * vectors[word]
+        try:
+            sen_vector1 += vectors[word]
+        except:
+            continue
     avg1 = np.array(sen_vector1)/len(s1)
 
     sen_vector2 = [0] * vectorsize
     for word in s2:
-        fac = 1
-        sen_vector2 += fac * vectors[word]
+        try:
+            sen_vector2 += vectors[word]
+        except:
+            continue
     avg2 = np.array(sen_vector2)/len(s2)
 
     return 1 - spatial.distance.cosine(avg1, avg2)
