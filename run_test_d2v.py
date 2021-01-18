@@ -17,7 +17,10 @@ if __name__ == "__main__":
 
     ''' d2v '''
     X_d2v_vectorized = doc2vec.vectorize_data_d2v(X, d2v_model)
-    results_d2v = bc.train_test_models(X_d2v_vectorized, Y, 'd2v', models, 200)
+    X_train, X_test, y_train, y_test = preprocess.split_train_test_vect(X_d2v_vectorized, Y)
+    model = bc.train_model(X_train, y_train, 'd2v', 200)
+    results_d2v = bc.test_model(X_test, y_test, model)
+    print(results_d2v)
 
     print(pd.DataFrame(data=results_d2v))
     ''' Results are automatically saved in results/ '''
