@@ -11,7 +11,7 @@ from gensim.models import word2vec
 from scipy import spatial
 import numpy as np
 from math import floor
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import pickle
 from progress.bar import Bar
 from sklearn import naive_bayes
@@ -178,8 +178,11 @@ def train_test_model_kfold(X, Y, batch_size = 25):
 
 def train_model(X_train, y_train, batch_size = 200):
     estimator = KerasClassifier(build_fn=create_baseline, epochs=100, batch_size=batch_size, verbose=1)
-    # scaler = preprocessing.MinMaxScaler()
-    # X_train= scaler.fit_transform(X_train)
+    estimator.fit(X_train, y_train)
+    return estimator
+
+def train_model_use(X_train, y_train, batch_size = 200):
+    estimator = KerasClassifier(build_fn=single_layer_1024, epochs=100, batch_size=batch_size, verbose=1)
     estimator.fit(X_train, y_train)
     return estimator
 
@@ -195,7 +198,7 @@ def split_train_test_vect(X, Y, partition_size = 0.7):
 
 def test_model(X_test, y_test, model):
     y_pred = model.predict(X_test)
-    return accuracy_score(y_test, y_pred)
+    return accuracy_score(y_test, y_pred), precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred)
 
 def train_test_models(X_vectorized, Y, method, models = ['create_baseline'], batch_size = 200):
     accuracies = defaultdict(dict)

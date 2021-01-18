@@ -4,6 +4,7 @@ from math import floor
 from nltk.stem.snowball import SnowballStemmer
 import numpy as np
 from gensim.parsing.preprocessing import remove_stopwords
+from nltk.stem import WordNetLemmatizer 
 
 def process(data):
     '''Applies standard nltk word tokenizer to the questions, replacing the original
@@ -58,6 +59,18 @@ def stem_data(data):
     data.question1 = data.question1.apply(lambda sentence: stem_sentence(sentence, stemmer))
     data.question2 = data.question2.apply(lambda sentence: stem_sentence(sentence, stemmer))
     return data
+
+def lem_sentence(sentence, lemmatizer):
+    result = []
+    for word in sentence:
+        result.append(lemmatizer.lemmatize(word))
+    return result
+
+def lem_data(data):
+    lemmatizer = WordNetLemmatizer()
+    data.question1 = data.question1.apply(lambda sentence: lem_sentence(sentence, lemmatizer))
+    data.question2 = data.question2.apply(lambda sentence: lem_sentence(sentence, lemmatizer))
+    return data
     
 def split_train_test(data, partition_size = 0.7):
     partition = floor(len(data)*partition_size)
@@ -75,6 +88,7 @@ def split_train_test_vect(X, Y, partition_size = 0.7):
     y_train = Y[:partition]
     y_test = Y[partition:]
     return X_train, X_test, y_train, y_test
+
 
 
 if __name__ == "__main__":
