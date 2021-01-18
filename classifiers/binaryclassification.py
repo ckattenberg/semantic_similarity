@@ -1,6 +1,4 @@
 import pandas as pd
-import tensorflow as tf
-from tensorflow import keras
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.wrappers.scikit_learn import KerasClassifier
@@ -178,28 +176,15 @@ def train_test_model_kfold(X, Y, batch_size = 25):
     results = cross_val_score(estimator, X, Y, cv=kfold)
     return (results.mean()*100, results.std()*100)
 
-
-def train_model(X_train, y_train, model_name, batch_size = 200):
-    try:
-        estimator = keras.models.load_model('neuralnets/'+model_name+'.h5')
-        print(model_name, ' neural net loaded')
-    except:
-        estimator = create_baseline()
-        print('training neural net')
-        estimator.fit(X_train, y_train, epochs = 100, batch_size = batch_size, verbose = 1)
-        estimator.save('neuralnets/'+model_name+'.h5', save_format = 'h5')
-
+def train_model(X_train, y_train, batch_size = 200):
+    estimator = KerasClassifier(build_fn=create_baseline, epochs=100, batch_size=batch_size, verbose=1)
+    estimator.fit(X_train, y_train)
     return estimator
 
-def train_model_use(X_train, y_train, model_name, batch_size = 200):
-    try:
-        estimator = keras.models.load_model('neuralnets/'+model_name+'.h5')
-        print(model_name, ' neural net loaded')
-    except:
-        estimator = single_layer_1024()
-        print('training neural net')
-        estimator.fit(X_train, y_train, epochs = 100, batch_size = batch_size, verbose = 1)
-        estimator.save('neuralnets/'+model_name+'.h5', save_format = 'h5')
+def train_model_use(X_train, y_train, batch_size = 200):
+    estimator = KerasClassifier(build_fn=single_layer_1024, epochs=100, batch_size=batch_size, verbose=1)
+    estimator.fit(X_train, y_train)
+    return estimator
 
     return estimator
 
