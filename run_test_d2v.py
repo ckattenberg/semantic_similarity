@@ -15,7 +15,7 @@ if __name__ == "__main__":
     ''' All models are located in classifiers/binaryclassification.py '''
     models = ['single_layer_200','double_layer_200']
 
-     ''' d2v '''
+    ''' d2v '''
     X_d2v_vectorized = doc2vec.vectorize_data_d2v(X, d2v_model)
     X_train, X_test, y_train, y_test = preprocess.split_train_test_vect(X_d2v_vectorized, Y)
     model = bc.train_model(X_train, y_train, 'd2v', 200)
