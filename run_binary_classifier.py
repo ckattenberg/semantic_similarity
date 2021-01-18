@@ -27,7 +27,7 @@ if __name__ == "__main__":
     ''' w2v '''
     X_w2v_vectorized = bc.vectorize_data_w2v(X, w2v_vectors)
     X_train, X_test, y_train, y_test = preprocess.split_train_test_vect(X_w2v_vectorized, Y)
-    model = bc.train_model(X_train, y_train, 200)
+    model = bc.train_model(X_train, y_train, 'w2v', 200)
     results_w2v = bc.test_model(X_test, y_test, model)
     ''' Accuracy, Precision, Recall, F1 '''
     print(results_w2v)
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     ''' d2v '''
     X_d2v_vectorized = doc2vec.vectorize_data_d2v(X, d2v_model)
     X_train, X_test, y_train, y_test = preprocess.split_train_test_vect(X_d2v_vectorized, Y)
-    model = bc.train_model(X_train, y_train, 200)
+    model = bc.train_model(X_train, y_train, 'd2v', 200)
     results_d2v = bc.test_model(X_test, y_test, model)
     print(results_d2v)
 
@@ -45,13 +45,10 @@ if __name__ == "__main__":
     Y = data['is_duplicate']
     X_use_vectorized = run_use.vectorize_data(X)
     X_train, X_test, y_train, y_test = preprocess.split_train_test_vect(X_use_vectorized, Y)
-    model = bc.train_model_use(X_train, y_train, 25)
+    model = bc.train_model_use(X_train, y_train, 'use', 25)
     results_use = bc.test_model(X_test, y_test, model)
     print(results_use)
     
-
-
-
     print('w2v: ', results_w2v)
     print('d2v: ', results_d2v)
     print('use: ', results_use)

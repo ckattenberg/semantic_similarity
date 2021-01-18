@@ -1,13 +1,13 @@
 from process import preprocess, readdata
 from embed import tfidf_classifier
+from classifiers import binaryclassification as bc
 
 vectorizer = tfidf_classifier.vectorizer
 classifier = tfidf_classifier.classifier
 
 if __name__ == "__main__":
-    result = []
     print('--- reading data ---')
-    data = readdata.read()[:10000]
+    data = readdata.read()
     print(data['is_duplicate'].value_counts())
 
     print('--- concatting ---')
@@ -22,9 +22,6 @@ if __name__ == "__main__":
     model = classifier.fit(X_train, y_train)
 
     print('--- testing model ---')
-    y_pred = model.predict(X_test)
+    print(bc.test_model(X_test,y_test,model))
 
-    # Print scores
-    print('Accuracy: ', tfidf_classifier.accuracy_score(y_test, y_pred))
-    print('Precision: ', tfidf_classifier.precision_score(y_test, y_pred))
-    print('Recall: ', tfidf_classifier.recall_score(y_test, y_pred))
+    

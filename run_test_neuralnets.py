@@ -16,7 +16,7 @@ def join_results(list_results):
         else:
             df = df.join(pd.DataFrame(data=r), how = 'outer', sort=False)
     # Reorganize
-    df = df.reindex(['single_layer_200','double_layer_200','single_layer_1024','double_layer_1024'])
+    # df = df.reindex(['single_layer_200','double_layer_200','single_layer_1024','double_layer_1024'])
     return df
 
 if __name__ == "__main__":
@@ -44,11 +44,11 @@ if __name__ == "__main__":
     ''' w2v '''
     X_w2v_vectorized = bc.vectorize_data_w2v(X, w2v_vectors)
     results_w2v = bc.train_test_models(X_w2v_vectorized,Y,'w2v',models, 200)
-    del X_w2v_vectorized
+
     ''' d2v '''
     X_d2v_vectorized = doc2vec.vectorize_data_d2v(X, d2v_model)
     results_d2v = bc.train_test_models(X_d2v_vectorized,Y,'d2v',models, 200)
-    del X_d2v_vectorized
+
     ''' use '''
     # USE uses raw data instead of clean_process data
     data = readdata.read()
@@ -71,4 +71,42 @@ if __name__ == "__main__":
     results = join_results(list_results)
     print(results)
     results.to_csv('results/results.csv')
-    
+
+''' Total Results (Clean)
+\begin{table}[]
+\begin{tabular}{llll}
+Neural net                   & w2v   & d2v   & use   \\
+single\_layer\_200           & 0.783 & 0.740 &       \\
+double\_layer\_200           & 0.764 & 0.724 &       \\
+double\_layer\_200\_200      & 0.763 & 0.721 &       \\
+triple\_layer\_200\_200\_200 & 0.763 & 0.719 &       \\
+single\_layer\_1024          &       &       & 0.842 \\
+double\_layer\_1024          &       &       & 0.843 \\
+triple\_layer\_1024          &       &       & 0.844
+\end{tabular}
+\end{table}
+'''
+
+
+''' Lemmatized vs not Lemmatized
+\begin{table}[]
+\begin{tabular}{lllll}
+                   & \multicolumn{2}{l}{Lemmatized} & \multicolumn{2}{l}{Not Lemmatized} \\
+Neural net         & w2v            & d2v           & w2v              & d2v             \\
+single\_layer\_200 & 0.786          & 0.730         & 0.783            & 0.740           \\
+double\_layer\_200 & 0.780          & 0.713         & 0.764            & 0.724          
+\end{tabular}
+\end{table}
+'''
+
+''' TFIDF Cosine vs NB
+\begin{table}[]
+\begin{tabular}{lll}
+          & Cosine & Naive Bayes \\
+Accuracy  & 0.668  & 0.740       \\
+Precision & 0.586  & 0.709       \\
+Recall    & 0.303  & 0.480       \\
+F-1       & 0.400  & 0.572      
+\end{tabular}
+\end{table}
+'''
