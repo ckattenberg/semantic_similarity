@@ -35,7 +35,7 @@ def read_corpus(corpus, tokens_only=False):
 def doc2vec_model(train_data):
 	print("Training the doc2vec model.")
 	model = gensim.models.doc2vec.Doc2Vec(vector_size=100, 
-		min_count=2, epochs=10)
+		min_count=2)
 
 	# Build a vocabulary
 	model.build_vocab(train_data)
