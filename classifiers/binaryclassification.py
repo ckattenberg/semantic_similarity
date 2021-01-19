@@ -186,6 +186,8 @@ def train_model_use(X_train, y_train, batch_size = 200):
     estimator.fit(X_train, y_train)
     return estimator
 
+    return estimator
+
 def split_train_test_vect(X, Y, partition_size = 0.7):
     partition = floor(len(Y)*partition_size)
     X_train = X[:partition]
@@ -197,7 +199,8 @@ def split_train_test_vect(X, Y, partition_size = 0.7):
     
 
 def test_model(X_test, y_test, model):
-    y_pred = model.predict(X_test)
+    y_pred = (model.predict(X_test) > 0.5).astype("int32")
+
     return accuracy_score(y_test, y_pred), precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred)
 
 def train_test_models(X_vectorized, Y, method, models = ['create_baseline'], batch_size = 200):
