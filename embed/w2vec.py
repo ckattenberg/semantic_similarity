@@ -28,7 +28,8 @@ def string_similarity(model, s1, s2):
     sen_vector1 = [0] * vectorsize
     for word in s1:
         try:
-            sen_vector1 += vectors[word]
+            fac = 50/vectors.vocab[word].count
+            sen_vector1 += fac * vectors[word]
         except:
             continue
     avg1 = np.array(sen_vector1)/len(s1)
@@ -36,11 +37,11 @@ def string_similarity(model, s1, s2):
     sen_vector2 = [0] * vectorsize
     for word in s2:
         try:
-            sen_vector2 += vectors[word]
+            fac = 50/vectors.vocab[word].count
+            sen_vector2 += fac * vectors[word]
         except:
             continue
     avg2 = np.array(sen_vector2)/len(s2)
-
     return 1 - spatial.distance.cosine(avg1, avg2)
 
 def calc_similarity(data, model):
