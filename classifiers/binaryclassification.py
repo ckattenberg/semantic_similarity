@@ -19,6 +19,9 @@ from sklearn.svm import SVC
 from sklearn.neural_network import MLPClassifier
 from collections import defaultdict
 import os
+import tensorflow as tf
+from tensorflow import keras
+
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
@@ -214,6 +217,8 @@ def train_model_use(X_train, y_train, model_name, batch_size = 200):
         estimator.fit(X_train, y_train, epochs = 100, batch_size = batch_size, verbose = 1)
         estimator.save('neuralnets/'+model_name+'.h5', save_format = 'h5')
 
+    return estimator
+
 def split_train_test_vect(X, Y, partition_size = 0.7):
     partition = floor(len(Y)*partition_size)
     X_train = X[:partition]
@@ -227,7 +232,7 @@ def split_train_test_vect(X, Y, partition_size = 0.7):
 def test_model(X_test, y_test, model):
     y_pred = (model.predict(X_test) > 0.5).astype("int32")
 
-    return accuracy_score(y_test, y_pred), precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred))
+    return accuracy_score(y_test, y_pred), precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred)
 
 def train_test_models(X_vectorized, Y, method, models = ['create_baseline'], batch_size = 200):
     accuracies = defaultdict(dict)
