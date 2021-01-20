@@ -186,22 +186,33 @@ def train_test_model_kfold(X, Y, batch_size = 25):
     results = cross_val_score(estimator, X, Y, cv=kfold)
     return (results.mean()*100, results.std()*100)
 
-def train_model(X_train, y_train, batch_size = 200):
-    estimator = KerasClassifier(build_fn=create_baseline, epochs=100, batch_size=batch_size, verbose=1)
-    estimator.fit(X_train, y_train)
-    return estimator
 
 def train_model_400(X_train, y_train, batch_size = 200):
     estimator = KerasClassifier(build_fn=double_layer_400, epochs=100, batch_size=batch_size, verbose=1)
     estimator.fit(X_train, y_train)
     return estimator
 
-def train_model_use(X_train, y_train, batch_size = 200):
-    estimator = KerasClassifier(build_fn=single_layer_1024, epochs=100, batch_size=batch_size, verbose=1)
-    estimator.fit(X_train, y_train)
-    return estimator
+def train_model(X_train, y_train, model_name, batch_size = 200):
+    try:
+        estimator = keras.models.load_model('neuralnets/'+model_name+'.h5')
+        print(model_name, ' neural net loaded')
+    except:
+        estimator = create_baseline()
+        print('training neural net')
+        estimator.fit(X_train, y_train, epochs = 100, batch_size = batch_size, verbose = 1)
+        estimator.save('neuralnets/'+model_name+'.h5', save_format = 'h5')
 
     return estimator
+
+def train_model_use(X_train, y_train, model_name, batch_size = 200):
+    try:
+        estimator = keras.models.load_model('neuralnets/'+model_name+'.h5')
+        print(model_name, ' neural net loaded')
+    except:
+        estimator = single_layer_1024()
+        print('training neural net')
+        estimator.fit(X_train, y_train, epochs = 100, batch_size = batch_size, verbose = 1)
+        estimator.save('neuralnets/'+model_name+'.h5', save_format = 'h5')
 
 def split_train_test_vect(X, Y, partition_size = 0.7):
     partition = floor(len(Y)*partition_size)
@@ -216,10 +227,7 @@ def split_train_test_vect(X, Y, partition_size = 0.7):
 def test_model(X_test, y_test, model):
     y_pred = (model.predict(X_test) > 0.5).astype("int32")
 
-    print("Accuracy: ", accuracy_score(y_test, y_pred))
-    print("Precision: ", precision_score(y_test, y_pred))
-    print("Recall: ", recall_score(y_test, y_pred))
-    print("F1: ", f1_score(y_test, y_pred))
+    return accuracy_score(y_test, y_pred), precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred))
 
 def train_test_models(X_vectorized, Y, method, models = ['create_baseline'], batch_size = 200):
     accuracies = defaultdict(dict)
@@ -240,3 +248,4 @@ def train_test_models(X_vectorized, Y, method, models = ['create_baseline'], bat
 
 if __name__ == "__main__":
     pass
+
