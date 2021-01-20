@@ -9,6 +9,8 @@ from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.metrics import accuracy_score
 import tensorflow as tf
 import pickle
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 def embed_data(data):
     q1 = data["question1"]
@@ -83,7 +85,7 @@ def create_use_pickle(data):
         pickle.dump(vector_list, f)
 
 if __name__ == "__main__":
-    data = readdata.read()[:5000]
+    data = readdata.read()
 
     # Split raw_data into train/test set
     X_train, y_train, X_test, y_test = preprocess.split_train_test(data)
@@ -97,7 +99,7 @@ if __name__ == "__main__":
 
     # Train model on training set
     print('--- training model ---')
-    model = train_model(concat_em_train, y_train, 25)
+    model = train_model(concat_em_train, y_train, 1000)
 
     # Test model on test set
     print('--- testing model ---')
