@@ -207,7 +207,7 @@ def train_model(X_train, y_train, model_name, batch_size = 200):
 
     return estimator
 
-def train_model_use(X_train, y_train, model_name, batch_size = 200):
+def train_model_use(X_train, y_train, model_name, batch_size = 25):
     try:
         estimator = keras.models.load_model('neuralnets/'+model_name+'.h5')
         print(model_name, ' neural net loaded')
@@ -231,6 +231,11 @@ def split_train_test_vect(X, Y, partition_size = 0.7):
 
 def test_model(X_test, y_test, model):
     y_pred = (model.predict(X_test) > 0.5).astype("int32")
+
+    return accuracy_score(y_test, y_pred), precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred)
+
+def test_model_use(X_test, y_test, model):
+    y_pred = model.predict(X_test)
 
     return accuracy_score(y_test, y_pred), precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred)
 
