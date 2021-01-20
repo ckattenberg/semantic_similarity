@@ -14,11 +14,12 @@ if __name__ == "__main__":
     w2v_model = w2vec.get_model(data, partition)
     w2v_vectors = w2v_model.wv
 
-    d2v_model = doc2vec.load_model("models/doc2vec.model")
+    d2v_model = doc2vec.load_model("models/d2v/doc2vec.model")
 
     ''' Run once to create pickle to speed up vectorizing in future. (600 MB) '''
     # bc.create_w2v_pickle(data, w2v_vectors)
     # doc2vec.create_d2v_pickle(data, d2v_model)
+    # run_use.create_use_pickle(data)
 
     X = data[['question1','question2']]
     Y = data['is_duplicate']
