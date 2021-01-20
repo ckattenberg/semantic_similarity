@@ -236,6 +236,18 @@ def test_model(X_test, y_test, model):
 
     return accuracy_score(y_test, y_pred), precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred)
 
+def test_model2(X_test, b, y_test, model):
+    y_pred = (model.predict(X_test) > 0.5).astype("int32")
+    i = 0
+    for pred in y_pred:
+        for y in pred:
+            if y == 1:
+                print(b.iloc[i])
+        i+=1
+    
+
+    return accuracy_score(y_test, y_pred), precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred)
+
 def train_test_models(X_vectorized, Y, method, models = ['create_baseline'], batch_size = 200):
     accuracies = defaultdict(dict)
 
