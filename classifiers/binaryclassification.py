@@ -235,10 +235,6 @@ def test_model(X_test, y_test, model):
     y_pred = (model.predict(X_test) > 0.5).astype("int32")
 
     return accuracy_score(y_test, y_pred), precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred)
-<<<<<<< HEAD
-=======
-
->>>>>>> 8727bec5adf9722e095585afd369cba3762dd2b1
 
 def train_test_models(X_vectorized, Y, method, models = ['create_baseline'], batch_size = 200):
     accuracies = defaultdict(dict)
