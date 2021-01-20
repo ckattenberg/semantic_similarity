@@ -54,6 +54,16 @@ def double_layer_200():
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
     return model
 
+def double_layer_400():
+    # create model
+    model = Sequential()
+    model.add(Dense(200, input_dim=400, activation='relu'))
+    model.add(Dense(100, activation='relu'))
+    model.add(Dense(1, activation='sigmoid'))
+    # Compile model
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return model
+
 def double_layer_200_200():
 	# create model
     model = Sequential()
@@ -181,6 +191,11 @@ def train_model(X_train, y_train, batch_size = 200):
     estimator.fit(X_train, y_train)
     return estimator
 
+def train_model_400(X_train, y_train, batch_size = 200):
+    estimator = KerasClassifier(build_fn=double_layer_400, epochs=100, batch_size=batch_size, verbose=1)
+    estimator.fit(X_train, y_train)
+    return estimator
+
 def train_model_use(X_train, y_train, batch_size = 200):
     estimator = KerasClassifier(build_fn=single_layer_1024, epochs=100, batch_size=batch_size, verbose=1)
     estimator.fit(X_train, y_train)
@@ -201,7 +216,10 @@ def split_train_test_vect(X, Y, partition_size = 0.7):
 def test_model(X_test, y_test, model):
     y_pred = (model.predict(X_test) > 0.5).astype("int32")
 
-    return accuracy_score(y_test, y_pred), precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred)
+    print("Accuracy: ", accuracy_score(y_test, y_pred))
+    print("Precision: ", precision_score(y_test, y_pred))
+    print("Recall: ", recall_score(y_test, y_pred))
+    print("F1: ", f1_score(y_test, y_pred))
 
 def train_test_models(X_vectorized, Y, method, models = ['create_baseline'], batch_size = 200):
     accuracies = defaultdict(dict)
