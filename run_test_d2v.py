@@ -18,7 +18,7 @@ if __name__ == "__main__":
     ''' d2v '''
     X_d2v_vectorized = doc2vec.vectorize_data_d2v(X, d2v_model)
     X_train, X_test, y_train, y_test = preprocess.split_train_test_vect(X_d2v_vectorized, Y)
-    model = bc.train_model_400(X_train, y_train)
+    model = bc.train_model(X_train, y_train, "d2v")
     results_d2v = bc.test_model(X_test, y_test, model)
     print(results_d2v)
 
