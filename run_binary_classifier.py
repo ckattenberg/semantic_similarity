@@ -10,9 +10,9 @@ if __name__ == "__main__":
     print('--- reading data ---')
     data = preprocess.clean_process(readdata.read()[:5000])
 
-    partition = floor(len(data.index)*1)
+    partition = floor(len(data.index)*0.7)
     w2v_model = w2vec.get_model(data, partition)
-    w2v_model.save("models/w2vmodel.mod")
+
     w2v_vectors = w2v_model.wv
 
     d2v_model = doc2vec.load_model("models/doc2vec.model")
