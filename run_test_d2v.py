@@ -7,7 +7,7 @@ if __name__ == "__main__":
     print('--- reading data ---')
     data = preprocess.clean_process(readdata.read())
 
-    d2v_model = doc2vec.load_model("models/doc2vec.model")
+    d2v_model = doc2vec.load_model("models/d2v/doc2vec.model")
     
     X = data[['question1','question2']]
     Y = data['is_duplicate']
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     ''' d2v '''
     X_d2v_vectorized = doc2vec.vectorize_data_d2v(X, d2v_model)
     X_train, X_test, y_train, y_test = preprocess.split_train_test_vect(X_d2v_vectorized, Y)
-    model = bc.train_model(X_train, y_train, 'd2v', 200)
+    model = bc.train_model_400(X_train, y_train)
     results_d2v = bc.test_model(X_test, y_test, model)
     print(results_d2v)
 

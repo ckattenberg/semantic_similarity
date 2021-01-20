@@ -54,6 +54,16 @@ def double_layer_200():
     model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
     return model
 
+def double_layer_400():
+    # create model
+    model = Sequential()
+    model.add(Dense(200, input_dim=400, activation='relu'))
+    model.add(Dense(100, activation='relu'))
+    model.add(Dense(1, activation='sigmoid'))
+    # Compile model
+    model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+    return model
+
 def double_layer_200_200():
 	# create model
     model = Sequential()
@@ -178,6 +188,11 @@ def train_test_model_kfold(X, Y, batch_size = 25):
 
 def train_model(X_train, y_train, batch_size = 200):
     estimator = KerasClassifier(build_fn=create_baseline, epochs=100, batch_size=batch_size, verbose=1)
+    estimator.fit(X_train, y_train)
+    return estimator
+
+def train_model_400(X_train, y_train, batch_size = 200):
+    estimator = KerasClassifier(build_fn=double_layer_400, epochs=100, batch_size=batch_size, verbose=1)
     estimator.fit(X_train, y_train)
     return estimator
 

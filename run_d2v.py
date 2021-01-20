@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
 	# If a model already exists, we just need to load it.
 	try:
-		model = d2v.load_model()
+		model = d2v.load_model("models/d2v/doc2vec.model")
 		print("A d2v embedding model already exists.")
 	except:
 		print("Could not find an existing model. Creating one. \n (Will be saved in models/doc2vec.model)")
@@ -21,5 +21,8 @@ if __name__ == "__main__":
 		if not os.path.exists('models'):
 			os.makedirs('models')
 
-		d2v.create_model(training_data, "models/doc2vec.model")
+		if not os.path.exists('models/d2v'):
+			os.makedirs('models/d2v')
+
+		d2v.create_model(training_data, "models/d2v/doc2vec.model")
 		
