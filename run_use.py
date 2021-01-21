@@ -99,7 +99,7 @@ if __name__ == "__main__":
 
     # Train model on training set
     print('--- training model ---')
-    model = train_model(concat_em_train, y_train, 1000)
+    model = train_model(concat_em_train, y_train, 100)
 
     # Test model on test set
     print('--- testing model ---')
