@@ -1,8 +1,3 @@
-"""
-The code in this document can be used to create a Doc2Vec model with the gensim package.
-Use the function load_model(filepath) to load in a model and
-doc2vec(model, sent) to get the vector embedding of a sentence sent.
-"""
 import gensim
 from scipy.spatial import distance
 import numpy as np
@@ -35,7 +30,7 @@ def read_corpus(corpus, tokens_only=False):
 def doc2vec_model(train_data):
 	print("Training the doc2vec model.")
 	model = gensim.models.doc2vec.Doc2Vec(vector_size=100, 
-		min_count=2, epochs=50)
+		min_count=2)
 
 	# Build a vocabulary
 	model.build_vocab(train_data)
@@ -81,7 +76,7 @@ def load_model(filepath):
 def doc2vec(model, sent1, sent2):
 	vector_q1 = np.array(model.infer_vector(sent1))
 	vector_q2 = np.array(model.infer_vector(sent2))
-
+	
 	return np.concatenate((vector_q1,vector_q2))
 
 # Create a new model with the dataset and save it to disk
@@ -94,6 +89,9 @@ def create_model(data, filename):
 	# Train the model and save it to disk
 	model = doc2vec_model(tagged_training_corpus)
 	model.save(filename)
+
+def test():
+  print('test')
 
 # Main function
 if __name__ == "__main__":
