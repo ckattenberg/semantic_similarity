@@ -5,7 +5,7 @@ from keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.model_selection import cross_val_score
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import StratifiedKFold
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn import preprocessing
 from gensim.models import word2vec
 from scipy import spatial
@@ -232,21 +232,91 @@ def split_train_test_vect(X, Y, partition_size = 0.7):
     
 
 def test_model(X_test, y_test, model):
+    y_pred = (model.predict(X_test, batch_size = 25) > 0.5).astype("int32")
+
+    return accuracy_score(y_test, y_pred), precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred)
+
+def test_model_tfidf(X_test, y_test, model):
     y_pred = (model.predict(X_test) > 0.5).astype("int32")
 
     return accuracy_score(y_test, y_pred), precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred)
 
-def test_model2(X_test, b, y_test, model):
-    y_pred = (model.predict(X_test) > 0.5).astype("int32")
+def overlap(zipped_preds, y_test):
+    res = defaultdict(lambda: defaultdict(int))
+    total = len(y_test)
+
     i = 0
-    for pred in y_pred:
-        for y in pred:
-            if y == 1:
-                print(b.iloc[i])
-        i+=1
+    y_test = list(y_test)
+    
+    for pred in zipped_preds:
+        w2v = pred[0]
+        d2v = pred[1]
+        use = pred[2]
+        tfidf = pred[3]
+
+        ''' w2v '''
+        if w2v == y_test[i] and d2v != y_test[i]:
+            res['w2v']['d2v'] += 1
+        if w2v == y_test[i] and use != y_test[i]:
+            res['w2v']['use'] += 1
+        if w2v == y_test[i] and tfidf != y_test[i]:
+            res['w2v']['tfidf'] += 1
+
+        ''' d2v '''
+        if d2v == y_test[i] and w2v != y_test[i]:
+            res['d2v']['w2v'] += 1
+        if d2v == y_test[i] and use != y_test[i]:
+            res['d2v']['use'] += 1
+        if d2v == y_test[i] and tfidf != y_test[i]:
+            res['d2v']['tfidf'] += 1  
+
+        ''' use '''
+        if use == y_test[i] and w2v != y_test[i]:
+            res['use']['w2v'] += 1
+        if use == y_test[i] and d2v != y_test[i]:
+            res['use']['d2v'] += 1
+        if use == y_test[i] and tfidf != y_test[i]:
+            res['use']['tfidf'] += 1
+
+        ''' tfidf '''
+        if tfidf == y_test[i] and w2v != y_test[i]:
+            res['tfidf']['w2v'] += 1
+        if tfidf == y_test[i] and d2v != y_test[i]:
+            res['tfidf']['d2v'] += 1
+        if tfidf == y_test[i] and use != y_test[i]:
+            res['tfidf']['use'] += 1
+
+        i += 1
+
+    for x in res:
+        for y in res[x]:
+            res[x][y] = res[x][y] / total
+
+    df = pd.concat({k: pd.DataFrame.from_dict(v, 'index') for k, v in res.items()}, axis=0)
+    return df
+
+
+def zip_preds(preds):
+    res = []
+    for pred in preds:
+        flat_list = []
+        for x in pred:
+            if type(x) is np.int32:
+                flat_list.append(x)
+            else:
+                for y in x:
+                    flat_list.append(y)
+        
+        res.append(flat_list)
+    zipped = zip(res[0],res[1],res[2],res[3])
+    return zipped
+    
+    
+            
+
     
 
-    return accuracy_score(y_test, y_pred), precision_score(y_test, y_pred), recall_score(y_test, y_pred), f1_score(y_test, y_pred)
+    return None
 
 def train_test_models(X_vectorized, Y, method, models = ['create_baseline'], batch_size = 200):
     accuracies = defaultdict(dict)
