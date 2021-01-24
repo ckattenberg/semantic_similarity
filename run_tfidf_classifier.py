@@ -22,6 +22,6 @@ if __name__ == "__main__":
     model = classifier.fit(X_train, y_train)
 
     print('--- testing model ---')
-    print(bc.test_model(X_test,y_test,model))
+    print(bc.test_model_tfidf(X_test,y_test,model))
 
     
