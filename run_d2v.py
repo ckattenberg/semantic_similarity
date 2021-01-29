@@ -11,7 +11,7 @@ if __name__ == "__main__":
 		model = d2v.load_model("models/d2v/doc2vec.model")
 		print("A d2v embedding model already exists.")
 	except:
-		print("Could not find an existing model. Creating one. \n (Will be saved in models/doc2vec.model)")
+		print("Could not find an existing model. Creating one. \n (Will be saved in models/d2v/doc2vec.model)")
 		print("Reading in data")
 		data = readdata.read()
 		print("Cleaning data")
@@ -25,4 +25,5 @@ if __name__ == "__main__":
 			os.makedirs('models/d2v')
 
 		d2v.create_model(training_data, "models/d2v/doc2vec.model")
+		print('doc2vec model saved')
 		
